@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/yourbest/tcpnode#readme",
   "dependencies": {
+    "app-root-path": "^2.2.1",
     "debug": "^4.1.1",
-    "uuid": "^3.3.2"
+    "process": "^0.11.10",
+    "uuid": "^3.3.2",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^3.8.0"
   }
 }
