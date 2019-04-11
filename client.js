@@ -18,7 +18,7 @@ function getConn(connName) {
         Logger.info('Connection remote address : ' + client.remoteAddress + ":" + client.remotePort);
     });
 
-    client.setTimeout(10*1000);
+    client.setTimeout(100*1000);
     client.setEncoding('utf8');
 
     // When receive server send back data.

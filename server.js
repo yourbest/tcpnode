@@ -11,7 +11,7 @@ const Server = Net.createServer(function (client) {
 
     client.setEncoding('utf-8');
 
-    client.setTimeout(10*1000);
+    client.setTimeout(100*1000);
 
     // When receive client data.
     client.on('data', function (data) {
@@ -20,7 +20,7 @@ const Server = Net.createServer(function (client) {
         Logger.info('Receive client send data : ' + data + ', data size : ' + client.bytesRead);
 
         // Server send data back to client use client net.Socket object.
-        client.end('Server received data : ' + data + ', send back to client data size : ' + client.bytesWritten);
+        // client.end('Server received data : ' + data + ', send back to client data size : ' + client.bytesWritten);
     });
 
     // When client send data complete.
