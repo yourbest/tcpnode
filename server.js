@@ -1,159 +1,68 @@
 'use strict';
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+// require('ssl-root-cas').inject()
 
-const {DebugLogger, InfoLogger, ErrorLogger} = require("./logger/logger.js")
-const net = require('net');
+const Logger = require("./logger/logger.js")
+const Net = require('net');
 
-// creates the server
-var server = net.createServer();
+// Create and return a net.Server object, the function will be invoked when client connect to this server.
+const Server = Net.createServer(function (client) {
+    Logger.info('Client connect. Client local address : ' + client.localAddress + ':' + client.localPort + '. client remote address : ' + client.remoteAddress + ':' + client.remotePort);
 
-//emitted when server closes ...not emitted until all connections closes.
-server.on('close',function(){
-    console.log('Server closed !');
+    client.setEncoding('utf-8');
+
+    client.setTimeout(10*1000);
+
+    // When receive client data.
+    client.on('data', function (data) {
+
+        // Print received client data and length.
+        Logger.info('Receive client send data : ' + data + ', data size : ' + client.bytesRead);
+
+        // Server send data back to client use client net.Socket object.
+        client.end('Server received data : ' + data + ', send back to client data size : ' + client.bytesWritten);
+    });
+
+    // When client send data complete.
+    client.on('end', function () {
+        Logger.info('Client disconnect.');
+
+        // Get current connections count.
+        Server.getConnections(function (err, count) {
+            if (!err) {
+                // Print current connection count in server console.
+                Logger.info("There are %d connections now. ", ++count);
+            } else {
+                // console.error(JSON.stringify(err));
+                Logger.error(err, "Error Occured When GetConnections");
+            }
+
+        });
+    });
+
+    // When client timeout.
+    client.on('timeout', function () {
+        Logger.info('Client request time out. ');
+    })
 });
 
-// emitted when new client connects
-server.on('connection',function(socket){
+// Make the server a TCP server listening on port 9999.
+Server.listen(9999, function () {
 
-//this property shows the number of characters currently buffered to be written. (Number of characters is approximately equal to the number of bytes to be written, but the buffer may contain strings, and the strings are lazily encoded, so the exact number of bytes is not known.)
-//Users who experience large or growing bufferSize should attempt to "throttle" the data flows in their program with pause() and resume().
+    // Get server address info.
+    var serverInfo = Server.address();
 
-    console.log('Buffer size : ' + socket.bufferSize);
+    var serverInfoJson = JSON.stringify(serverInfo);
 
-    console.log('---------server details -----------------');
+    Logger.info('TCP server listen on address : ' + serverInfoJson);
 
-    var address = server.address();
-    var port = address.port;
-    var family = address.family;
-    var ipaddr = address.address;
-    console.log('Server is listening at port' + port);
-    console.log('Server ip :' + ipaddr);
-    console.log('Server is IP4/IP6 : ' + family);
-
-    var lport = socket.localPort;
-    var laddr = socket.localAddress;
-    console.log('Server is listening at LOCAL port' + lport);
-    console.log('Server LOCAL ip :' + laddr);
-
-    console.log('------------remote client info --------------');
-
-    var rport = socket.remotePort;
-    var raddr = socket.remoteAddress;
-    var rfamily = socket.remoteFamily;
-
-    console.log('REMOTE Socket is listening at port' + rport);
-    console.log('REMOTE Socket ip :' + raddr);
-    console.log('REMOTE Socket is IP4/IP6 : ' + rfamily);
-
-    console.log('--------------------------------------------')
-//var no_of_connections =  server.getConnections(); // sychronous version
-    server.getConnections(function(error,count){
-        console.log('Number of concurrent connections to the server : ' + count);
+    Server.on('close', function () {
+        Logger.info('TCP server socket is closed.');
     });
 
-    socket.setEncoding('utf8');
-
-    socket.setTimeout(800000,function(){
-        // called after timeout -> same as socket.on('timeout')
-        // it just tells that soket timed out => its ur job to end or destroy the socket.
-        // socket.end() vs socket.destroy() => end allows us to send final data and allows some i/o activity to finish before destroying the socket
-        // whereas destroy kills the socket immediately irrespective of whether any i/o operation is goin on or not...force destry takes place
-        console.log('Socket timed out');
+    Server.on('error', function (error) {
+        Logger.error(err, "Error Occured When Server Starting");
+        // console.error(JSON.stringify(error));
     });
-
-
-    socket.on('data',function(data){
-        var bread = socket.bytesRead;
-        var bwrite = socket.bytesWritten;
-        console.log('Bytes read : ' + bread);
-        console.log('Bytes written : ' + bwrite);
-        console.log('Data sent to server : ' + data);
-
-        //echo data
-        var is_kernel_buffer_full = socket.write('Data ::' + data);
-        if(is_kernel_buffer_full){
-            console.log('Data was flushed successfully from kernel buffer i.e written successfully!');
-        }else{
-            socket.pause();
-        }
-
-    });
-
-    socket.on('drain',function(){
-        console.log('write buffer is empty now .. u can resume the writable stream');
-        socket.resume();
-    });
-
-    socket.on('error',function(error){
-        console.log('Error : ' + error);
-    });
-
-    socket.on('timeout',function(){
-        console.log('Socket timed out !');
-        socket.end('Timed out!');
-        // can call socket.destroy() here too.
-    });
-
-    socket.on('end',function(data){
-        console.log('Socket ended from other end!');
-        console.log('End data : ' + data);
-    });
-
-    socket.on('close',function(error){
-        var bread = socket.bytesRead;
-        var bwrite = socket.bytesWritten;
-        console.log('Bytes read : ' + bread);
-        console.log('Bytes written : ' + bwrite);
-        console.log('Socket closed!');
-        if(error){
-            console.log('Socket was closed coz of transmission error');
-        }
-    });
-
-    setTimeout(function(){
-        var isdestroyed = socket.destroyed;
-        console.log('Socket destroyed:' + isdestroyed);
-        socket.destroy();
-    },1200000);
 
 });
-
-// emits when any error occurs -> calls closed event immediately after this.
-server.on('error',function(error){
-    console.log('Error: ' + error);
-});
-
-//emits when server is bound with server.listen
-server.on('listening',function(){
-    console.log('Server is listening!');
-});
-
-server.maxConnections = 10;
-
-//static port allocation
-server.listen(9999);
-
-
-// for dyanmic port allocation
-server.listen(function(){
-    var address = server.address();
-    var port = address.port;
-    var family = address.family;
-    var ipaddr = address.address;
-    console.log('Server is listening at port' + port);
-    console.log('Server ip :' + ipaddr);
-    console.log('Server is IP4/IP6 : ' + family);
-});
-
-
-
-var islistening = server.listening;
-
-if(islistening){
-    console.log('Server is listening');
-}else{
-    console.log('Server is not listening');
-}
-
-setTimeout(function(){
-    server.close();
-},5000000);

@@ -1,7 +1,7 @@
 'use strict';
 
-const {DebugLogger, InfoLogger, ErrorLogger} = require("./logger/logger.js")
-const net = require('net');
+const Logger = require("./logger/logger.js")
+const Net = require('net');
 
 // This function create and return a net.Socket object to represent TCP client.
 function getConn(connName) {
@@ -12,10 +12,10 @@ function getConn(connName) {
     }
 
     // Create TCP client.
-    const client = net.createConnection(option, function () {
-        InfoLogger('Connection name : ' + connName);
-        InfoLogger('Connection local address : ' + client.localAddress + ":" + client.localPort);
-        InfoLogger('Connection remote address : ' + client.remoteAddress + ":" + client.remotePort);
+    const client = Net.createConnection(option, function () {
+        Logger.info('Connection name : ' + connName);
+        Logger.info('Connection local address : ' + client.localAddress + ":" + client.localPort);
+        Logger.info('Connection remote address : ' + client.remoteAddress + ":" + client.remotePort);
     });
 
     client.setTimeout(10*1000);
@@ -23,21 +23,21 @@ function getConn(connName) {
 
     // When receive server send back data.
     client.on('data', function (data) {
-        InfoLogger('Server return data : ' + data);
+        Logger.info('Server return data : ' + data);
     });
 
     // When connection disconnected.
     client.on('end', function () {
-        InfoLogger('Client socket disconnect. ');
+        Logger.info('Client socket disconnect. ');
     });
 
     client.on('timeout', function () {
-        InfoLogger('Client connection timeout. ');
+        Logger.info('Client connection timeout. ');
     });
 
     client.on('error', function (err) {
         // console.error(JSON.stringify(err));
-        ErrorLogger(err, "Error Occured When Client Starting");
+        Logger.error(err, "Error Occured When Client Starting");
     });
 
     return client;

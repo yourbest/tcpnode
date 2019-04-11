@@ -1,31 +1,48 @@
-// ./service/log.js
-const {logger} = require("./logger-config")
+// config/logConfig.js
+"use strict"
 
-// const onStart = () => {
-//     logger.info("server start")
-// }
+require("winston-daily-rotate-file")
 
-const onDebug = (msg) => {
-    logger.debug(msg)
-}
-const onInfo = (msg) => {
-    logger.info(msg)
-}
-const onError = (error, msg) => {
-    error.msg = msg
-    logger.error(`Error on sending message: msgseq=${msg.data.msgseq} | msg=${msg.data.msg}`)
-    logger.error(error)
+const {createLogger, format, transports} = require("winston")
+const fs = require("fs")
+
+const env = process.env.NODE_ENV || "development"
+const logDir = "./logs"
+
+// Create the log directory if it does not exist
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir)
 }
 
-const onSendingMsgError = (error, msg) => {
-    error.msg = msg
-    logger.error(`Error on sending message: msgseq=${msg.data.msgseq} | msg=${msg.data.msg}`)
-    logger.error(error)
-}
+const dailyRotateFileTransport = new transports.DailyRotateFile({
+    level: "debug",
+    filename: `${logDir}/%DATE%-logs.log`,
+    datePattern: "YYYY-MM-DD",
+    zippedArchive: false,
+    maxSize: "20m",
+    maxFiles: "14d"
+})
 
-module.exports = {
-    DebugLogger: onDebug,
-    InfoLogger: onInfo,
-    ErrorLogger: onError
-    // onStart: onStart
-}
+const logger = createLogger({
+    level: env === "development" ? "debug" : "info",
+    format: format.combine(
+        format.timestamp({
+            format: "YYYY-MM-DD HH:mm:ss"
+        }),
+        format.json()
+    ),
+    transports: [
+        new transports.Console({
+            level: "info",
+            format: format.combine(
+                format.colorize(),
+                format.printf(
+                    info => `${info.timestamp} ${info.level}: ${info.message}`
+                )
+            )
+        }),
+        dailyRotateFileTransport
+    ]
+})
+
+module.exports = logger
