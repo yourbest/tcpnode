@@ -18,7 +18,7 @@ function getConn(connName) {
         Logger.info('Connection remote address : ' + client.remoteAddress + ":" + client.remotePort);
     });
 
-    client.setTimeout(100*1000);
+    client.setTimeout(10*1000);
     client.setEncoding('utf8');
 
     // When receive server send back data.
@@ -33,6 +33,7 @@ function getConn(connName) {
 
     client.on('timeout', function () {
         Logger.info('Client connection timeout. ');
+        client.emit('end');
     });
 
     client.on('error', function (err) {
