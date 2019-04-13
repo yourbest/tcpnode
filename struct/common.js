@@ -5,7 +5,7 @@ const Hello = require('./hello.js');
 
 const Header = Struct()
     .chars('startCode', 1, 'hex')           //1
-    .chars('functionCode', 1)        //1
+    .chars('functionCode', 1, 'hex')        //1
     .word16Sle('extenderId')        //2
     .word8Sle('messageType')        //1
     .word8Sle('subMessageType')     //1
