@@ -25,12 +25,12 @@ server.on('connection', socket => {
     sendHello.fields.header.startCode = '84';
     sendHello.fields.header.functionCode = '01';
     sendHello.fields.header.exptenderId = 0;
-    sendHello.fields.header.msgType = 1;
-    sendHello.fields.header.subMsgType = 1;
+    sendHello.fields.header.messageType = 1;
+    sendHello.fields.header.subMessageType = 1;
     sendHello.fields.data.signature = 'HELO'
     sendHello.fields.tail.endCode = '85';
-    sendHello.fields.header.dataLength = sendHello.fields.data.signature.length;
-    Logger.info("Hello Return => "+sendHello.buffer().toString('hex'))
+    sendHello.fields.header.dataLength = sendHello.get('data').length();
+    Logger.info("Hello Return => "+sendHello.buffer().toString('hex').toUpperCase())
 
     clients[clientname] = socket;
     Logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
