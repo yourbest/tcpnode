@@ -6,10 +6,10 @@ const Hello = require('./hello.js');
 const Header = Struct()
     .chars('startCode', 1, 'hex')           //1
     .chars('functionCode', 1, 'hex')        //1
-    .word16Sle('extenderId')        //2
-    .word8Sle('messageType')        //1
-    .word8Sle('subMessageType')     //1
-    .word16Sle('dataLength');       //2
+    .word16Ule('extenderId')        //2
+    .word8Ule('messageType')        //1
+    .word8Ule('subMessageType')     //1
+    .word16Ule('dataLength');       //2
 
 const EndCode = Struct().chars('endCode', 1, 'hex')
 
