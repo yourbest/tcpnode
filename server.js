@@ -1,7 +1,8 @@
 'use strict';
 
-const Logger = require("./logger/logger.js")
-const struct = require("./struct/common.js")
+const logger = require("./logger/logger.js")
+const frame = require("./frame")
+const worker = require("./worker")
 const net = require('net');
 
 
@@ -18,65 +19,29 @@ server.maxConnections = maxConn;
 
 server.on('connection', socket => {
     let clientname = socket.remoteAddress+"."+socket.remotePort;
-    Logger.info("New connected remote address => "+clientname)
-
-    //Send Hello Packet
-    let sendHello = struct.SendHello.allocate();
-    sendHello.fields.header.startCode = '84';
-    sendHello.fields.header.functionCode = '01';
-    sendHello.fields.header.exptenderId = 0;
-    sendHello.fields.header.messageType = 1;
-    sendHello.fields.header.subMessageType = 1;
-    sendHello.fields.data.signature = 'HELO'
-    sendHello.fields.tail.endCode = '85';
-    sendHello.fields.header.dataLength = sendHello.get('data').length();
-    Logger.info("Hello Return => "+sendHello.buffer().toString('hex').toUpperCase())
-
     clients[clientname] = socket;
-    Logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
+    logger.info("New "+Object.keys(clients).length+"th connected remote address => "+clientname)
 
-    // connection.write(`Please enter a room name\r\n`);
-    // connection.setEncoding('utf-8');
-
-    // //When Connected
-    // connection.on('connection', () => {
-    //     clientname = connection.remoteAddress+" "+connection.remotePort;
-    //     Logger.debug("New conneced remote address => "+clientname)
-    //
-    //     //Increase the number of active clients
-    //     // clientCount++;
-    //     //Store the connections by client name
-    //     clients[clientname] = connection;
-    // });
+    //초기 접속시 hello 요청
+    let reqHello = worker.hello.requestHello(socket);
 
     //When Received Data
     socket.on('data', data => {
-        Logger.info("EVENT :: data Length => "+data.length);
         let bufData = Buffer.from(data);
-        Logger.info('Bytes read : ' + bufData.toString('hex').toUpperCase());
+        logger.debug('Bytes read('+data.length+') : ' + bufData.toString('hex').toUpperCase());
 
-        // let sendHello = struct.SendHello.allocate();
-        // let proxy = sendHello.fields;
-        // sendHello._setBuff(Buffer.from(data));
-        // console.log(sendHello.buffer());
-        // proxy.header.startCode = '85'
-        // proxy.tail.endCode = '88';
-        // console.log(sendHello.buffer());
-        // sendHello.fields.tail.endCode = '0x85';
-        // console.log("startCode = " + Buffer.from(sendHello.fields.tail.endCode));
-
-        let header = struct.Header.allocate();
+        //Header 분리
+        let header = frame.Common.Header.allocate();
         header._setBuff(bufData.slice(0, 8));
-        Logger.info("header="+header.buffer().toString('hex').toUpperCase());
-        // TODO 분기 로직
+        logger.info("Header="+header.buffer().toString('hex').toUpperCase());
+        // TODO 체크 로직
         /*****************************************************
         1) proxy.header.startCode != 84 아니면 접속종료 (아니면, 무시)
         2) proxy.header.functionCode
         *****************************************************/
-        let bufResp;
         switch(header.fields.messageType){
-            case 1:     //Hello
-                    // if()
+            case 1:     //Hello (Send Response)
+                worker.hello.responseHello(header, bufData);
                 break;
             case 2:     //System Setting
                 break;
@@ -115,37 +80,37 @@ server.on('connection', socket => {
 
     //When Timeout
     socket.on('timeout', () => {
-        Logger.info("EVENT :: timeout------");
+        logger.info("EVENT :: timeout------");
             });
 
     //A close event is emmited when a connection is disconnected from the server
     socket.on('close', () => {
-        Logger.info("EVENT :: close");
+        logger.info("EVENT :: close");
         //When a client disconnecs, remove the name and connection
         delete clients[clientname];
-        Logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
+        logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
         //Send a message to every active client that someone just left the room
         // broadcast(`- ${clientname} has left the room\r\n Active Users : ${clientCount}\r\n`);
     });
 
     //Handle error events
     socket.on('error', error => {
-        Logger.error("EVENT :: error");
+        logger.error("EVENT :: error");
         // connection.write(`Error : ${error}`);
         delete clients[clientname];
-        Logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
+        logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
         socket.end();
     });
 
 });
 
 server.on('close', () => {
-    Logger.info(`Server disconnected`);
+    logger.info(`Server disconnected`);
 });
 
 server.on('error', error => {
-    Logger.info(`Error : ${error}`);
+    logger.info(`Error : ${error}`);
 });
 
 server.listen(9999);
-Logger.info("-----------------------------")
+logger.info("-----------------------------")

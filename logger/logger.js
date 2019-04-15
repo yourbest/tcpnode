@@ -33,7 +33,7 @@ const logger = createLogger({
     ),
     transports: [
         new transports.Console({
-            level: "info",
+            level: "debug",
             format: format.combine(
                 format.colorize(),
                 format.printf(
