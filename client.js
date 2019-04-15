@@ -33,6 +33,7 @@ function getConn(connName) {
 
     client.on('timeout', function () {
         Logger.info('Client connection timeout. ');
+        client.emit('end');
     });
 
     client.on('error', function (err) {

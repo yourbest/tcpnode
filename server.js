@@ -1,68 +1,151 @@
 'use strict';
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-// require('ssl-root-cas').inject()
 
 const Logger = require("./logger/logger.js")
-const Net = require('net');
+const struct = require("./struct/common.js")
+const net = require('net');
 
-// Create and return a net.Server object, the function will be invoked when client connect to this server.
-const Server = Net.createServer(function (client) {
-    Logger.info('Client connect. Client local address : ' + client.localAddress + ':' + client.localPort + '. client remote address : ' + client.remoteAddress + ':' + client.remotePort);
 
-    client.setEncoding('utf-8');
+const maxConn = 10;
+//All active connections are stored in this object together with their client name
+let clients = {};
 
-    client.setTimeout(10*1000);
+const server = net.createServer();
+server.maxConnections = maxConn;
 
-    // When receive client data.
-    client.on('data', function (data) {
 
-        // Print received client data and length.
-        Logger.info('Receive client send data : ' + data + ', data size : ' + client.bytesRead);
+//Stores the number of active clients
+// let clientCount = 0;
 
-        // Server send data back to client use client net.Socket object.
-        client.end('Server received data : ' + data + ', send back to client data size : ' + client.bytesWritten);
+server.on('connection', socket => {
+    let clientname = socket.remoteAddress+"."+socket.remotePort;
+    Logger.info("New connected remote address => "+clientname)
+
+    //Send Hello Packet
+    let sendHello = struct.SendHello.allocate();
+    sendHello.fields.header.startCode = '84';
+    sendHello.fields.header.functionCode = '01';
+    sendHello.fields.header.exptenderId = 0;
+    sendHello.fields.header.messageType = 1;
+    sendHello.fields.header.subMessageType = 1;
+    sendHello.fields.data.signature = 'HELO'
+    sendHello.fields.tail.endCode = '85';
+    sendHello.fields.header.dataLength = sendHello.get('data').length();
+    Logger.info("Hello Return => "+sendHello.buffer().toString('hex').toUpperCase())
+
+    clients[clientname] = socket;
+    Logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
+
+    // connection.write(`Please enter a room name\r\n`);
+    // connection.setEncoding('utf-8');
+
+    // //When Connected
+    // connection.on('connection', () => {
+    //     clientname = connection.remoteAddress+" "+connection.remotePort;
+    //     Logger.debug("New conneced remote address => "+clientname)
+    //
+    //     //Increase the number of active clients
+    //     // clientCount++;
+    //     //Store the connections by client name
+    //     clients[clientname] = connection;
+    // });
+
+    //When Received Data
+    socket.on('data', data => {
+        Logger.info("EVENT :: data Length => "+data.length);
+        let bufData = Buffer.from(data);
+        Logger.info('Bytes read : ' + bufData.toString('hex').toUpperCase());
+
+        // let sendHello = struct.SendHello.allocate();
+        // let proxy = sendHello.fields;
+        // sendHello._setBuff(Buffer.from(data));
+        // console.log(sendHello.buffer());
+        // proxy.header.startCode = '85'
+        // proxy.tail.endCode = '88';
+        // console.log(sendHello.buffer());
+        // sendHello.fields.tail.endCode = '0x85';
+        // console.log("startCode = " + Buffer.from(sendHello.fields.tail.endCode));
+
+        let header = struct.Header.allocate();
+        header._setBuff(bufData.slice(0, 8));
+        Logger.info("header="+header.buffer().toString('hex').toUpperCase());
+        // TODO 분기 로직
+        /*****************************************************
+        1) proxy.header.startCode != 84 아니면 접속종료 (아니면, 무시)
+        2) proxy.header.functionCode
+        *****************************************************/
+        let bufResp;
+        switch(header.fields.messageType){
+            case 1:     //Hello
+                    // if()
+                break;
+            case 2:     //System Setting
+                break;
+            case 10:    //IR
+                break;
+            case 11:    //Serial
+                break;
+            case 12:    //Relay
+                break;
+            case 13:    //Current Sensor
+                break;
+            case 14:    //Digital Input
+                break;
+            case 100:   //Notify
+                break;
+            default:    //무시
+                break;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // socket.write(sendHello.buffer());
+
+        // clientname = connection.remoteAddress+" "+connection.remotePort;
     });
 
-    // When client send data complete.
-    client.on('end', function () {
-        Logger.info('Client disconnect.');
+    //When Timeout
+    socket.on('timeout', () => {
+        Logger.info("EVENT :: timeout------");
+            });
 
-        // Get current connections count.
-        Server.getConnections(function (err, count) {
-            if (!err) {
-                // Print current connection count in server console.
-                Logger.info("There are %d connections now. ", ++count);
-            } else {
-                // console.error(JSON.stringify(err));
-                Logger.error(err, "Error Occured When GetConnections");
-            }
-
-        });
+    //A close event is emmited when a connection is disconnected from the server
+    socket.on('close', () => {
+        Logger.info("EVENT :: close");
+        //When a client disconnecs, remove the name and connection
+        delete clients[clientname];
+        Logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
+        //Send a message to every active client that someone just left the room
+        // broadcast(`- ${clientname} has left the room\r\n Active Users : ${clientCount}\r\n`);
     });
 
-    // When client timeout.
-    client.on('timeout', function () {
-        Logger.info('Client request time out. ');
-    })
+    //Handle error events
+    socket.on('error', error => {
+        Logger.error("EVENT :: error");
+        // connection.write(`Error : ${error}`);
+        delete clients[clientname];
+        Logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
+        socket.end();
+    });
+
 });
 
-// Make the server a TCP server listening on port 9999.
-Server.listen(9999, function () {
-
-    // Get server address info.
-    var serverInfo = Server.address();
-
-    var serverInfoJson = JSON.stringify(serverInfo);
-
-    Logger.info('TCP server listen on address : ' + serverInfoJson);
-
-    Server.on('close', function () {
-        Logger.info('TCP server socket is closed.');
-    });
-
-    Server.on('error', function (error) {
-        Logger.error(err, "Error Occured When Server Starting");
-        // console.error(JSON.stringify(error));
-    });
-
+server.on('close', () => {
+    Logger.info(`Server disconnected`);
 });
+
+server.on('error', error => {
+    Logger.info(`Error : ${error}`);
+});
+
+server.listen(9999);
+Logger.info("-----------------------------")
