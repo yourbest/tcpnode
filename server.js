@@ -61,18 +61,6 @@ server.on('connection', socket => {
                 break;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
         // socket.write(sendHello.buffer());
 
         // clientname = connection.remoteAddress+" "+connection.remotePort;
@@ -88,7 +76,7 @@ server.on('connection', socket => {
         logger.info("EVENT :: close");
         //When a client disconnecs, remove the name and connection
         delete clients[clientname];
-        logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
+        logger.info("Concurrent Connections are "+Object.keys(clients).length)
         //Send a message to every active client that someone just left the room
         // broadcast(`- ${clientname} has left the room\r\n Active Users : ${clientCount}\r\n`);
     });
