@@ -2,7 +2,23 @@
 
 const Influx = require('influxdb-nodejs');
 
-const client = new Influx('http://127.0.0.1:8086/mydb');
+const client =new Influx('http://tcpnode:tcpnode@localhost:8086/tcpnode');
+
+module.exports = client;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // // i --> integer
 // // s --> string
