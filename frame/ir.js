@@ -11,7 +11,7 @@ const Common = require('./common.js');
  */
 
 const ReqestIrWriteData = Struct()
-    .word16Ube('reservedField') //2
+    .chars('reservedField', 2) //2 TODO hex '0'으로 채워지는지 확인해야 함.
     .word8Ube('port') //1
     .chars('flag', 1, 'hex')  //1 (00h : don't care)
     .chars('irData', 360);  //360
@@ -21,7 +21,7 @@ const ResponseIrWriteData = Struct()
     .chars('reservedField', 9);    //9
 
 const ReqestIrRepeatStartData = Struct()
-    .word16Ube('reservedField') //2
+    .chars('reservedField', 2) //2 TODO hex '0'으로 채워지는지 확인해야 함.
     .word8Ube('port') //1
     .chars('flag', 1, 'hex')  //1 (00h : don't care)
     .chars('irData', 360);  //360
