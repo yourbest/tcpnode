@@ -101,4 +101,4 @@ server.on('error', error => {
 });
 
 server.listen(9999);
-logger.info("-----------------------------")
+logger.info("--------Server started (9999) ---------------------")
