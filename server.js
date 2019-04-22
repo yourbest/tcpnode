@@ -23,7 +23,7 @@ server.on('connection', socket => {
     logger.info("New "+Object.keys(clients).length+"th connected remote address => "+clientname)
 
     //초기 접속시 hello 요청
-    let reqHello = worker.hello.requestHello(socket);
+    let reqHello = worker.hello.requestHelloWorker(socket);
 
     //When Received Data
     socket.on('data', data => {
@@ -41,7 +41,7 @@ server.on('connection', socket => {
         *****************************************************/
         switch(header.fields.messageType){
             case 1:     //Hello (Send Response)
-                worker.hello.responseHello(header, bufData);
+                worker.hello.responseHelloWorker(header, bufData);
                 break;
             case 2:     //System Setting
                 break;

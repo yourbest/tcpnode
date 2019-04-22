@@ -5,9 +5,6 @@ const Common = require('./common.js');
 
 /**
  */
-//@TODO Sensor 라는 단어가 들어가도록 수정필요
-
-
 const SensorReportType = Struct()
     .word16Ube('triggerValue1')         //0~65535mA
     .word16Ube('triggerValue2')         //0~65535mA

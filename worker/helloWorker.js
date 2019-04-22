@@ -2,8 +2,9 @@
 
 const logger = require("../logger/logger.js")
 const frame = require('../frame')
+const influx = require('../influx/helloInflux.js');
 
-const requestHello = function (socket){
+const requestHelloWorker = function (socket){
     let reqHello = frame.Hello.RequestHello.allocate();
     reqHello.fields.header.startCode = '84';
     reqHello.fields.header.functionCode = '01';
@@ -19,7 +20,7 @@ const requestHello = function (socket){
 }
 
 
-const responseHello = function (header, bufData){
+const responseHelloWorker = function (header, bufData){
     let resHello = frame.Hello.ResponseHello.allocate();
     resHello._setBuff(bufData);
     //mac (6C2995867F27) => (36 43 32 39 39 35 38 36 37 46 32 37 )
@@ -27,23 +28,11 @@ const responseHello = function (header, bufData){
     logger.debug("Hello Response data size => "+resHello.fields.header.dataLength + " == "+ resHello.get('data').length())
     logger.debug("Extenter ID => "+resHello.fields.header.extenderId + "  // "+resHello.fields.data.extenderId)
 
-
-    // sendHello.fields.header.startCode = '84';
-    // sendHello.fields.header.functionCode = '01';
-    // sendHello.fields.header.extenderId = 0;
-    // sendHello.fields.header.messageType = 1;
-    // sendHello.fields.header.subMessageType = 1;
-    // sendHello.fields.data.signature = 'HELO'
-    // sendHello.fields.tail.endCode = '85';
-    // sendHello.fields.header.dataLength = sendHello.get('data').length();
-    // return resHello;
-
     // DB 저장
-    const influx = require('../influx/helloInflux.js');
     influx.writeHelloResponse(resHello);
 }
 
 module.exports = {
-    requestHello,
-    responseHello
+    requestHelloWorker,
+    responseHelloWorker
 };
