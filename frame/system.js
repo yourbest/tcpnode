@@ -3,13 +3,13 @@
 const Struct = require('struct');
 const Common = require('./common.js');
 
-const ReqestSystemRebootData = Struct()
+const RequestSystemRebootData = Struct()
     .chars('reservedField', 10);
 
-const ReqestSystemGetIpPortData = Struct()
+const RequestSystemGetIpPortData = Struct()
     .chars('reservedField', 10);
 
-const ReqestSystemSetIpPortData = Struct()
+const RequestSystemSetIpPortData = Struct()
     .word8Ube('ipLength')   //1
     .chars('serverIp', 15)  //15
     .word8Ube('portLength') //1
@@ -30,17 +30,17 @@ const ResponseSystemSetData = Struct()
 // for System ----------------------------------------- //
 const RequestSystemReboot = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestSystemRebootData)
+    .struct('data', RequestSystemRebootData)
     .struct('tail', Common.Tail);
 
 const RequestSystemGetIpPort = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestSystemGetIpPortData)
+    .struct('data', RequestSystemGetIpPortData)
     .struct('tail', Common.Tail);
 
-const ReqestSystemSetIpPort = Struct()
+const RequestSystemSetIpPort = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestSystemSetIpPortData)
+    .struct('data', RequestSystemSetIpPortData)
     .struct('tail', Common.Tail);
 
 const ResponseSystemSet = Struct()
@@ -51,10 +51,10 @@ const ResponseSystemSet = Struct()
 module.exports = {
     RequestSystemRebootData,
     RequestSystemGetIpPortData,
-    ReqestSystemSetIpPortData,
+    RequestSystemSetIpPortData,
     ResponseSystemSetData,
     RequestSystemReboot,
     RequestSystemGetIpPort,
-    ReqestSystemSetIpPort,
+    RequestSystemSetIpPort,
     ResponseSystemSet
 }

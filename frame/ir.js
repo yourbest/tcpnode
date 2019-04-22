@@ -10,7 +10,7 @@ const Common = require('./common.js');
  10-	4	:	IR Repeat-Stop
  */
 
-const ReqestIrWriteData = Struct()
+const RequestIrWriteData = Struct()
     .chars('reservedField', 2) //2 TODO hex '0'으로 채워지는지 확인해야 함.
     .word8Ube('port') //1
     .chars('flag', 1, 'hex')  //1 (00h : don't care)
@@ -20,7 +20,7 @@ const ResponseIrWriteData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : error)
     .chars('reservedField', 9);    //9
 
-const ReqestIrRepeatStartData = Struct()
+const RequestIrRepeatStartData = Struct()
     .chars('reservedField', 2) //2 TODO hex '0'으로 채워지는지 확인해야 함.
     .word8Ube('port') //1
     .chars('flag', 1, 'hex')  //1 (00h : don't care)
@@ -30,14 +30,14 @@ const ResponseIrRepeatStartData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : error)
     .chars('reservedField', 9);    //9
 
-const ReqestIrRepeatContinueData = Struct()
+const RequestIrRepeatContinueData = Struct()
     .chars('reservedField', 10);    //10
 
 const ResponseIrRepeatContinueData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : error)
     .chars('reservedField', 9);    //9
 
-const ReqestIrRepeatStopData = Struct()
+const RequestIrRepeatStopData = Struct()
     .chars('reservedField', 10);    //10
 
 const ResponseIrRepeatStopData = Struct()
@@ -45,9 +45,9 @@ const ResponseIrRepeatStopData = Struct()
     .chars('reservedField', 9);    //9
 
 // for IR ----------------------------------------- //
-const ReqestIrWrite = Struct()
+const RequestIrWrite = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestIrWriteData)
+    .struct('data', RequestIrWriteData)
     .struct('tail', Common.Tail);
 
 const ResponseIrWrite = Struct()
@@ -55,9 +55,9 @@ const ResponseIrWrite = Struct()
     .struct('data', ResponseIrWriteData)
     .struct('tail', Common.Tail);
 
-const ReqestIrRepeatStart = Struct()
+const RequestIrRepeatStart = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestIrRepeatStartData)
+    .struct('data', RequestIrRepeatStartData)
     .struct('tail', Common.Tail);
 
 const ResponseIrRepeatStart = Struct()
@@ -65,9 +65,9 @@ const ResponseIrRepeatStart = Struct()
     .struct('data', ResponseIrRepeatStartData)
     .struct('tail', Common.Tail);
 
-const ReqestIrRepeatContinue = Struct()
+const RequestIrRepeatContinue = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestIrRepeatContinueData)
+    .struct('data', RequestIrRepeatContinueData)
     .struct('tail', Common.Tail);
 
 const ResponseIrRepeatContinue = Struct()
@@ -75,9 +75,9 @@ const ResponseIrRepeatContinue = Struct()
     .struct('data', ResponseIrRepeatContinueData)
     .struct('tail', Common.Tail);
 
-const ReqestIrRepeatStop = Struct()
+const RequestIrRepeatStop = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestIrRepeatStopData)
+    .struct('data', RequestIrRepeatStopData)
     .struct('tail', Common.Tail);
 
 const ResponseIrRepeatStop = Struct()
@@ -86,20 +86,20 @@ const ResponseIrRepeatStop = Struct()
     .struct('tail', Common.Tail);
 
 module.exports = {
-    ReqestIrWriteData,
+    RequestIrWriteData,
     ResponseIrWriteData,
-    ReqestIrRepeatStartData,
+    RequestIrRepeatStartData,
     ResponseIrRepeatStartData,
-    ReqestIrRepeatContinueData,
+    RequestIrRepeatContinueData,
     ResponseIrRepeatContinueData,
-    ReqestIrRepeatStopData,
+    RequestIrRepeatStopData,
     ResponseIrRepeatStopData,
-    ReqestIrWrite,
+    RequestIrWrite,
     ResponseIrWrite,
-    ReqestIrRepeatStart,
+    RequestIrRepeatStart,
     ResponseIrRepeatStart,
-    ReqestIrRepeatContinue,
+    RequestIrRepeatContinue,
     ResponseIrRepeatContinue,
-    ReqestIrRepeatStop,
+    RequestIrRepeatStop,
     ResponseIrRepeatStop
 }

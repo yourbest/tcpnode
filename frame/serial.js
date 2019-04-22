@@ -8,7 +8,7 @@ const Common = require('./common.js');
  11- 2	:	Serial Write & Read
  */
 
-const ReqestSerialWriteData = Struct()
+const RequestSerialWriteData = Struct()
     .chars('reservedField', 2)         //2
     .word8Ube('port') //1
     .chars('flag', 1, 'hex')  //1 (00h : don't care)
@@ -24,7 +24,7 @@ const ResponseSerialWriteData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : error)
     .chars('reservedField', 9); //10
 
-const ReqestSerialWriteReadData = Struct()
+const RequestSerialWriteReadData = Struct()
     .chars('reservedField', 2)         //2
     .word8Ube('port') //1
     .chars('flag', 1, 'hex')  //1 (00h : don't care)
@@ -43,9 +43,9 @@ const ResponseSerialWriteReadData = Struct()
     .chars('data', 32);  //200 (00h : don't care)
 
 // for Hello ----------------------------------------- //
-const ReqestSerialWrite = Struct()
+const RequestSerialWrite = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestSerialWriteData)
+    .struct('data', RequestSerialWriteData)
     .struct('tail', Common.Tail);
 
 const ResponseSerialWrite = Struct()
@@ -53,9 +53,9 @@ const ResponseSerialWrite = Struct()
     .struct('data', ResponseSerialWriteData)
     .struct('tail', Common.Tail);
 
-const ReqestSerialWriteRead = Struct()
+const RequestSerialWriteRead = Struct()
     .struct('header', Common.Header)
-    .struct('data', ReqestSerialWriteReadData)
+    .struct('data', RequestSerialWriteReadData)
     .struct('tail', Common.Tail);
 
 const ResponseSerialWriteRead = Struct()
@@ -65,12 +65,12 @@ const ResponseSerialWriteRead = Struct()
 
 
 module.exports = {
-    ReqestSerialWriteData,
+    RequestSerialWriteData,
     ResponseSerialWriteData,
-    ReqestSerialWriteReadData,
+    RequestSerialWriteReadData,
     ResponseSerialWriteReadData,
-    ReqestSerialWrite,
+    RequestSerialWrite,
     ResponseSerialWrite,
-    ReqestSerialWriteRead,
+    RequestSerialWriteRead,
     ResponseSerialWriteRead
 }
