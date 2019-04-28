@@ -4,11 +4,11 @@ const logger = require("../logger/logger.js")
 const frame = require('../frame')
 const influx = require('../influx/helloInflux.js');
 
-const requestHelloWorker = function (socket){
+const requestHelloWorker = function (socket, extenderId){
     let reqHello = frame.Hello.RequestHello.allocate();
     reqHello.fields.header.startCode = '84';
     reqHello.fields.header.functionCode = '01';
-    reqHello.fields.header.extenderId = 0;
+    reqHello.fields.header.extenderId = extenderId;
     reqHello.fields.header.messageType = 1;
     reqHello.fields.header.subMessageType = 1;
     reqHello.fields.data.signature = 'HELO'
@@ -21,6 +21,7 @@ const requestHelloWorker = function (socket){
 
 
 const responseHelloWorker = function (header, bufData){
+    logger.debug("Hello Response Buffer => "+bufData.toString('hex').toUpperCase())
     let resHello = frame.Hello.ResponseHello.allocate();
     resHello._setBuff(bufData);
     //mac (6C2995867F27) => (36 43 32 39 39 35 38 36 37 46 32 37 )
