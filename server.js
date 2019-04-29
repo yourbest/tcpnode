@@ -162,7 +162,7 @@ logger.info("--------Server started (9999) ---------------------")
 //
 // }
 
-
+const rpc = require("./network/rpc.js")
 
 
 

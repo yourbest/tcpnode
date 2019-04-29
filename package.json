@@ -11,13 +11,10 @@
     "build": "pkg .",
     "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yourbest/tcpnode.git"
-  },
+  "repository": "git+https://github.com/yourbest/tcpnode.git",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "yourbestneo@gmail.com",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/yourbest/tcpnode/issues"
   },
@@ -26,6 +23,7 @@
     "app-root-path": "^2.2.1",
     "debug": "^4.1.1",
     "influxdb-nodejs": "^3.0.0",
+    "node-json-rpc": "0.0.1",
     "process": "^0.11.10",
     "ssl-root-cas": "^1.3.1",
     "struct": "0.0.12",
@@ -33,5 +31,6 @@
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^3.8.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "private": true
 }

@@ -1,18 +1,18 @@
 'use strict'
 
-var rpc = require('node-json-rpc');
+const rpc = require('node-json-rpc');
 
-var options = {
+const options = {
     port: 5080,
-    host: '127.0.0.1',
+    host: 'localhost',
     path: '/',
     strict: false
 };
 
-var serv = new rpc.Server(options);
+const serv = new rpc.Server(options);
 
 serv.addMethod('test', function (params, callback) {
-    var error, result;
+    let error, result;
     console.log(params)
     if (params.length === 2) {
         result = params[0] + params[1];
@@ -30,7 +30,7 @@ serv.addMethod('test', function (params, callback) {
 
 serv.start(function (error) {
     if (error) throw error;
-    else console.log('Server running ...');
+    else console.log('RPC Server running on '+options.host+":"+options.port);
 });
 
 module.exports = {
