@@ -38,7 +38,7 @@ server.on('connection', socket => {
         //extender ID 저장. (원래는 Hello 에서 처리)
         clientName = header.fields.extenderId;
         if(!clients.hasOwnProperty(clientName)){
-            clients[clientName.toString()] = socket;
+            clients[clientName] = socket;
             logger.info("New "+Object.keys(clients).length+"th connected remote address("+(socket.remoteAddress+":"+socket.remotePort)+") exi_id => "+clientName)
         }
 
@@ -154,15 +154,29 @@ logger.info("--------Server started (9999) ---------------------")
 
 
 /*********************************************************************
-    Request Test
+    Periodically Request Test
  *********************************************************************/
+
+setInterval(function() {
+            logger.debug("Periodically Hello to Extender Keys : " + Object.keys(clients));
+    for(let extId in clients){
+        logger.debug("Periodically Hello to Extender ID : " + extId);
+        // logger.debug("Type of key:"+extId+" is "+typeof(clients[extId]));
+        worker.hello.requestHelloWorker(clients[extId], extId);
+
+    }
+    }
+    ,10*1000
+);
+
+
 // while(true){
 //     //setInterval(worker.system.RequestSystemSetIpPort(socket, 0, '192.168.10.2 ', '502'), 2*1000);
 //     // worker.system.RequestSystemSetIpPort(socket, 0, '192.168.10.2 ', '502')
 //
 // }
 
-const rpc = require("./network/rpc.js")
+// const rpc = require("./network/rpc.js")
 
 
 
