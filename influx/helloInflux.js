@@ -24,7 +24,7 @@ client.schema('hello', fieldHelloSchema, tagHelloSchema, {
 function writeHelloResponse (frame){
     client.write('hello')
         .tag({
-            extenderId: frame.fields.data.extenderId,
+            extenderId: frame.fields.header.extenderId,
             subMessageType: frame.fields.header.subMessageType,
             signature: frame.fields.data.signature,
             firmwareMajorVersion: frame.fields.data.firmwareMajorVersion,

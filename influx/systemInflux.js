@@ -18,12 +18,12 @@ client.schema('system', fieldHelloSchema, tagHelloSchema, {
     stripUnknown: false,
 });
 
-function writeSystemSetResponse (frame){
+function writeSystemSetServerResponse (frame){
     client.write('system')
         .tag({
-            extenderId: frame.fields.data.extenderId,
+            extenderId: frame.fields.header.extenderId,
             subMessageType: frame.fields.header.subMessageType,
-            result: frame.fields.data.result,
+            result: (frame.fields.data.result == '1') ? '1' : '0',
         })
         .field({
             count: 1
@@ -35,5 +35,5 @@ function writeSystemSetResponse (frame){
 }
 
 module.exports = {
-    writeSystemSetResponse
+    writeSystemSetServerResponse
 }

@@ -4,7 +4,7 @@ const logger = require("../logger/logger.js")
 const frame = require('../frame')
 const influx = require('../influx/helloInflux.js');
 
-const requestHelloWorker = function (socket, extenderId){
+const requestHelloWorker = async (socket, extenderId) => {
     let reqHello = frame.Hello.RequestHello.allocate();
     reqHello.fields.header.startCode = '84';
     reqHello.fields.header.functionCode = '01';
@@ -16,11 +16,15 @@ const requestHelloWorker = function (socket, extenderId){
     reqHello.fields.header.dataLength = reqHello.get('data').length();
     logger.debug("Hello Request => "+reqHello.buffer().toString('hex').toUpperCase())
     socket.write(reqHello.buffer())
-    // return reqHello;
+    // let result = await responseHelloWorker();
+    // logger.debug("Hello Request's Await Response => "+JSON.stringify(result));
+    // return result;
 }
 
 
 const responseHelloWorker = function (header, bufData){
+    if(typeof header != "object") return;
+
     logger.debug("Hello Response Buffer => "+bufData.toString('hex').toUpperCase())
     let resHello = frame.Hello.ResponseHello.allocate();
     resHello._setBuff(bufData);
@@ -31,6 +35,8 @@ const responseHelloWorker = function (header, bufData){
 
     // DB 저장
     influx.writeHelloResponse(resHello);
+    logger.info("responseHelloWorker return : "+ JSON.stringify(resHello.fields.data));
+    return resHello.fields.data;
 }
 
 module.exports = {

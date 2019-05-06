@@ -6,7 +6,7 @@ module.exports = {
     ,System : require('./system.js')
     // ,IR : require('./ir.js')
     ,Serial : require('./serial.js')
-    ,Relay : require('./relay.js')
+    // ,Relay : require('./relay.js')
     ,Current : require('./current.js')
     ,Digital : require('./digital.js')
     ,Notify : require('./notify.js')

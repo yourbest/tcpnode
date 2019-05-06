@@ -22,8 +22,9 @@ server.on('connection', socket => {
     // clients[clientname] = socket;
     // logger.info("New "+Object.keys(clients).length+"th connected remote address => "+clientname)
     let clientName;
+
     //초기 접속시 hello 요청
-    worker.hello.requestHelloWorker(socket, 1);
+    // worker.hello.requestHelloWorker(socket, 1);
 
     //When Received Data
     socket.on('data', data => {
@@ -31,6 +32,7 @@ server.on('connection', socket => {
         logger.debug('Bytes read('+data.length+') : ' + bufData.toString('hex').toUpperCase());
 
         //Header 분리
+        if(data.length < 10) return;//abnormal telegram
         let header = frame.Common.Header.allocate();
         header._setBuff(bufData.slice(0, 8));
         logger.info("Header="+header.buffer().toString('hex').toUpperCase());
@@ -49,62 +51,83 @@ server.on('connection', socket => {
         *****************************************************/
         switch(header.fields.messageType){
             case 1:     //Hello (Send Response)
-                worker.hello.responseHelloWorker(header, bufData);
+                switch(header.fields.subMessageType){
+                    case 1:
+                        worker.hello.responseHelloWorker(header, bufData);
+                        break;
+                    default:
+                        logger.error("ERROR: Wrong Hello Format : "+header.buffer().toString('hex').toUpperCase())
+                        break;
+                }
                 break;
-            case 2:     //System Setting
-                worker.system.requestSystemSetServer(header, bufData);
+            case 2:     //System Setting [rpc]
+                switch(header.fields.subMessageType){
+                    case 4:
+                        worker.system.responseSystemSetServerWorker(header, bufData);
+                        break;
+                    default:
+                        logger.error("ERROR: Wrong SystemSetting Format : "+header.buffer().toString('hex').toUpperCase())
+                        break;
+                }
                 break;
             // case 10:    //IR
             //     break;
-            case 11:    //Serial
+            case 11:    //Serial [rpc]
                 switch(header.fields.subMessageType){
                     case 1:
-                        worker.serial.responseSerialWrite(header, bufData);
+                        worker.serial.responseSerialWriteWorker(header, bufData);
                         break;
                     case 2:
-                        worker.serial.responseSerialWriteRead(header, bufData);
+                        worker.serial.responseSerialWriteReadWorker(header, bufData);
                         break;
                     default:
+                        logger.error("ERROR: Wrong Serial Format : "+header.buffer().toString('hex').toUpperCase())
                         break;
                 }
                 break;
             // case 12:    //Relay
             //     break;
-            case 13:    //Current Sensor
+            case 13:    //Current Sensor [rpc]
                 switch(header.fields.subMessageType){
                     case 2:
-                        worker.current.responseCurrentGetConfiguration(header, bufData);
+                        worker.current.responseCurrentGetConfigurationWorker(header, bufData);
                         break;
                     case 3:
-                        worker.current.responseCurrentGetStatus(header, bufData);
+                        worker.current.responseCurrentGetStatusWorker(header, bufData);
                         break;
                     default:
+                        logger.error("ERROR: Wrong Currrnt Format : "+header.buffer().toString('hex').toUpperCase())
                         break;
                 }
                 break;
-            case 14:    //Digital Input
+            case 14:    //Digital Input [rpc]
                 switch(header.fields.subMessageType){
                     case 3:
-                        worker.digital.responseGetStatus(header, bufData);
+                        worker.digital.responseDigitalGetStatusWorker(header, bufData);
                         break;
                     default:
+                        logger.error("ERROR: Wrong DigitalInput Format : "+header.buffer().toString('hex').toUpperCase())
                         break;
                 }
                 break;
             case 100:   //Notify
                 switch(header.fields.subMessageType){
                     case 1:
-                        worker.notify.PushNotifyDiStatus(header, bufData);
+                        worker.notify.pushNotifyDiStatusWorker(header, bufData)
+                            .then(worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId), 1);
                         break;
                     case 2:
-                        worker.notify.PushNotifyCurrentStatus(header, bufData);
+                        worker.notify.pushNotifyCurrentStatusWorker(header, bufData)
+                            .then(worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId), 2);
                         break;
                     default:
+                        logger.error("ERROR: Wrong Notify Format : "+header.buffer().toString('hex').toUpperCase())
                         break;
                 }
                 break;
             default:    //무시==> DisConnect !!
-                socket.end();
+                // socket.end();
+                logger.error("ERROR: Wrong Format : "+header.buffer().toString('hex').toUpperCase())
                 break;
         }
 
@@ -158,7 +181,7 @@ logger.info("--------Server started (9999) ---------------------")
  *********************************************************************/
 
 setInterval(function() {
-            logger.debug("Periodically Hello to Extender Keys : " + Object.keys(clients));
+    // logger.debug("Periodically Hello to Extender Keys : " + Object.keys(clients));
     for(let extId in clients){
         logger.debug("Periodically Hello to Extender ID : " + extId);
         // logger.debug("Type of key:"+extId+" is "+typeof(clients[extId]));
@@ -166,7 +189,7 @@ setInterval(function() {
 
     }
     }
-    ,10*1000
+    ,30*1000
 );
 
 
@@ -176,7 +199,8 @@ setInterval(function() {
 //
 // }
 
-// const rpc = require("./network/rpc.js")
+const rpc = require("./network/rpc.js");
+rpc.init(clients);
 
 
 

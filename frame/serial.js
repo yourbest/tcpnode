@@ -40,7 +40,7 @@ const ResponseSerialWriteReadData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : timeout)
     .chars('reservedField', 3) //10
     .word16Ube('dataLength')   //2
-    .chars('data', 32);  //200 (00h : don't care)
+    .chars('data', 32);  //MAX 32//TODO 가변길이라.....
 
 // for Hello ----------------------------------------- //
 const RequestSerialWrite = Struct()
