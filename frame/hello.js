@@ -9,8 +9,8 @@ const RequestHelloData = Struct()
 
 const ResponseHelloData = Struct()
     .chars('signature', 6)              //6
-    .word8Ube('firmwareMajorVersion')   //1
-    .word8Ube('firmwareMinorVersion')   //1
+    .chars('firmwareMajorVersion', 1)   //1
+    .chars('firmwareMinorVersion', 1)   //1
     .chars('macAddress', 12)            //12
     .word16Ube('extenderId')            //2
     .chars('reservedField', 8);         //8

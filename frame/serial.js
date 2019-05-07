@@ -40,7 +40,7 @@ const ResponseSerialWriteReadData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : timeout)
     .chars('reservedField', 3) //10
     .word16Ube('dataLength')   //2
-    .chars('data', 32);  //MAX 32//TODO 가변길이라.....
+    .chars('data', 32);  //MAX 32//TODO 가변길이라 실시간으로 생성해야 함. (ex : makeResponseSerialWriteReadData(datalength) return struct
 
 // for Hello ----------------------------------------- //
 const RequestSerialWrite = Struct()

@@ -2,7 +2,7 @@
 
 const logger = require("../logger/logger.js")
 const frame = require('../frame')
-const influx = require('../influx/serialInflux.js');
+// const influx = require('../influx/serialInflux.js');
 
 const requestSerialWriteWorker = function (socket, extenderId, port, uart1, uart2, uart3, uart4, uart5, data){
     let reqSerial = frame.Serial.RequestSerialWrite.allocate();
@@ -43,7 +43,7 @@ const responseSerialWriteWorker = function (header, bufData){
 }
 
 const requestSerialWriteReadWorker = function (socket, extenderId, port, uart1, uart2, uart3, uart4, uart5, data){
-    let reqSerial = frame.Serial.RequestSerialWrite.allocate();
+    let reqSerial = frame.Serial.RequestSerialWriteRead.allocate();
     reqSerial.fields.header.startCode = '84';
     reqSerial.fields.header.functionCode = '01';//01h, 02h
     reqSerial.fields.header.extenderId = extenderId;
@@ -67,7 +67,10 @@ const requestSerialWriteReadWorker = function (socket, extenderId, port, uart1, 
 }
 
 const responseSerialWriteReadWorker = function (header, bufData){
-    let resResult = frame.Serial.ResponseSerialWrite.allocate();
+    //TODO 실시간으로 struct 생성해야 함.
+    let resResult = frame.Serial.ResponseSerialWriteRead.allocate();
+    logger.debug("responseSerialWriteReadWorker resResult length="+resResult.length());
+    logger.debug("responseSerialWriteReadWorker Original bufData length="+bufData.toString('hex').length);
     resResult._setBuff(bufData);
 
     logger.info("responseSerialWriteWorker Response => "+resResult.buffer().toString('hex').toUpperCase())

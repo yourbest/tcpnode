@@ -1,11 +1,17 @@
 'use strict';
 
-const logger = require("./logger/logger.js")
-const frame = require("./frame")
-const worker = require("./worker")
+const logger = require("./logger/logger.js");
+// logger.debug (" label=>"+JSON.stringify(logger.transports[0]));
+const frame = require("./frame");
+const worker = require("./worker");
+
+logger.debug("Logger Test", {label: "myLogger"});
+
+
+
+
+
 const net = require('net');
-
-
 const maxConn = 10;
 //All active connections are stored in this object together with their client name
 let clients = {};
@@ -175,6 +181,10 @@ server.listen(9999);
 logger.info("--------Server started (9999) ---------------------")
 
 
+/**  비정상 예외 처리 **/
+process.on('uncaughtException', function(error) {
+    logger.error('UnCaughtException occured : '+error);
+});
 
 /*********************************************************************
     Periodically Request Test

@@ -18,7 +18,7 @@ function getServerIp() {
     return result;
 }
 
-module.exports{
+module.exports = {
     getServerIp
 }
 

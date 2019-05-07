@@ -4,18 +4,18 @@ const logger = require("../logger/logger.js")
 const client = require('./config.js')
 
 
-const tagCurrentSchema = {
+const tagDigitalSchema = {
     extenderId: '*',
     subMessageType: '*',
 };
 
-const fieldCurrentSchema = {
+const fieldDigitalSchema = {
     di1Status: 'i',
     di2Status: 'i',
     di3Status: 'i',
 };
 
-client.schema('current', fieldDigitalSchema, tagDigitalSchema, {
+client.schema('digital', fieldDigitalSchema, tagDigitalSchema, {
     stripUnknown: false,
 });
 
