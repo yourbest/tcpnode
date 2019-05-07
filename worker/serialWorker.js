@@ -38,6 +38,7 @@ const responseSerialWriteWorker = function (header, bufData){
 
     // Result 저장
     // influx.writeSystemSetServerResponse(resResult);
+    logger.info("responseSerialWriteWorker return : "+ JSON.stringify(resResult.fields.data));
     //TODO 이력을 모두 저정해야 할까?
     return resResult.fields.data.result;
 }
@@ -79,11 +80,13 @@ const responseSerialWriteReadWorker = function (header, bufData){
     // Result 저장
     // influx.writeSystemSetServerResponse(resResult);
     //TODO 세팅한 이력을 모두 저정해야 할까?
-    return {
+    let rslt = {
         'result': resResult.fields.data.result,
         'dataLength' : resResult.fields.data.dataLength,
         'data' : (resResult.fields.data.dataLength).substring(0,resResult.fields.data.dataLength),
     };
+    logger.info("responseSerialWriteWorker return : "+ JSON.stringify(rslt));
+    return rslt;
 }
 
 module.exports = {

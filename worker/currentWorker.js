@@ -31,6 +31,7 @@ const responseCurrentGetConfigurationWorker = function (header, bufData){
 
     // Result 저장
     //Get Config 이력 저장 안함 (reportType, period time, ch1/ch2 setting)
+    logger.info("responseCurrentGetConfigurationWorker return : "+ JSON.stringify(resResult.fields.data));
     return resResult.fields.data.result;
 }
 
@@ -59,6 +60,7 @@ const responseCurrentGetStatusWorker = function (header, bufData){
     logger.debug("responseCurrentGetStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
     // Result 저장
+    logger.info("responseCurrentGetStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influx.writeCurrentGetStatusResponse(resResult);
 
     return resResult.fields.data.result;

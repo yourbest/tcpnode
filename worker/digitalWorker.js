@@ -29,6 +29,7 @@ const responseDigitalGetStatusWorker = function (header, bufData){
     logger.debug("responseDigitalGetStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
     // Result 저장
+    logger.info("responseDigitalGetStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influx.writeDigitalGetStatusResponse(resResult);
 
     return resResult.fields.data.result;

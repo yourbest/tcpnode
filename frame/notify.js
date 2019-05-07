@@ -20,7 +20,7 @@ const PushNotifyCurrentStatusData = Struct()
 
 const ResponseNotifyData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : error)
-    .chars('reservedField', 9); //10
+    .chars('reservedField', 9); //9
 
 // for Notify ----------------------------------------- //
 const PushNotifyDiStatus = Struct()

@@ -6,20 +6,21 @@ const influxDigital = require('../influx/digitalInflux.js');
 const influxCurrent = require('../influx/currentInflux.js');
 
 const responseNotifyStatusWorker = function (socket, extenderId, subMessageType){
-    let reqNotify = frame.Notify.ResponseNotify.allocate();
-    reqNotify.fields.header.startCode = '84';
-    reqNotify.fields.header.functionCode = '02';//01h, 02h
-    reqNotify.fields.header.extenderId = extenderId;
-    reqNotify.fields.header.messageType = 100;
-    reqNotify.fields.header.subMessageType = subMessageType;
+    let resNotify = frame.Notify.ResponseNotify.allocate();
+    resNotify.fields.header.startCode = '84';
+    resNotify.fields.header.functionCode = '02';//01h, 02h
+    resNotify.fields.header.extenderId = extenderId;
+    resNotify.fields.header.messageType = 100;
+    resNotify.fields.header.subMessageType = subMessageType;
 
     //Result
-    reqNotify.fields.data.result = 0x01;
+    resNotify.fields.data.result = '01';
 
-    reqNotify.fields.tail.endCode = '85';
-    reqNotify.fields.header.dataLength = reqNotify.get('data').length();
-    logger.debug("System requestDigitalGetStatusWorker => "+reqNotify.buffer().toString('hex').toUpperCase())
-    socket.write(reqNotify.buffer())
+    resNotify.fields.tail.endCode = '85';
+    resNotify.fields.header.dataLength = resNotify.get('data').length();
+    console.log(resNotify.buffer());
+    logger.debug("Notify responseNotifyStatusWorker => "+resNotify.buffer().toString('hex').toUpperCase())
+    socket.write(resNotify.buffer())
     // return reqHello;
 }
 
@@ -31,6 +32,7 @@ const pushNotifyDiStatusWorker = function (header, bufData){
     logger.debug("pushNotifyDiStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
     // Result 저장
+    logger.info("pushNotifyDiStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influxDigital.writeDigitalGetStatusResponse(resResult);
 
     return resResult.fields.data.result;
@@ -44,6 +46,7 @@ const pushNotifyCurrentStatusWorker = function (header, bufData){
     logger.debug("pushNotifyCurrentStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
     // Result 저장
+    logger.info("pushNotifyCurrentStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influxCurrent.writeCurrentGetStatusResponse(resResult);
 
     return resResult.fields.data.result;

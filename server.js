@@ -5,12 +5,6 @@ const logger = require("./logger/logger.js");
 const frame = require("./frame");
 const worker = require("./worker");
 
-logger.debug("Logger Test", {label: "myLogger"});
-
-
-
-
-
 const net = require('net');
 const maxConn = 10;
 //All active connections are stored in this object together with their client name
@@ -120,11 +114,11 @@ server.on('connection', socket => {
                 switch(header.fields.subMessageType){
                     case 1:
                         worker.notify.pushNotifyDiStatusWorker(header, bufData)
-                            .then(worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId), 1);
+                        worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId, 1);
                         break;
                     case 2:
                         worker.notify.pushNotifyCurrentStatusWorker(header, bufData)
-                            .then(worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId), 2);
+                        worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId,2);
                         break;
                     default:
                         logger.error("ERROR: Wrong Notify Format : "+header.buffer().toString('hex').toUpperCase())
@@ -178,29 +172,31 @@ server.on('connection', socket => {
 // });
 
 server.listen(9999);
-logger.info("--------Server started (9999) ---------------------")
+console.log(`
+ ______     ______     __   __     ______   ______     ______     __         __         ______     ______
+/\\  ___\\   /\\  __ \\   /\\ "-.\\ \\   /\\__  _\\ /\\  == \\   /\\  __ \\   /\\ \\       /\\ \\       /\\  ___\\   /\\  == \\
+\\ \\ \\____  \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\/_/\\ \\/ \\ \\  __<   \\ \\ \\/\\ \\  \\ \\ \\____  \\ \\ \\____  \\ \\  __\\   \\ \\  __<
+ \\ \\_____\\  \\ \\_____\\  \\ \\_\\\\"\\_\\    \\ \\_\\  \\ \\_\\ \\_\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\
+  \\/_____/   \\/_____/   \\/_/ \\/_/     \\/_/   \\/_/ /_/   \\/_____/   \\/_____/   \\/_____/   \\/_____/   \\/_/ /_/
+`);
+logger.info("--------Server started (9999) ---------------------");
 
-
-/**  비정상 예외 처리 **/
-process.on('uncaughtException', function(error) {
-    logger.error('UnCaughtException occured : '+error);
-});
 
 /*********************************************************************
     Periodically Request Test
  *********************************************************************/
 
-setInterval(function() {
-    // logger.debug("Periodically Hello to Extender Keys : " + Object.keys(clients));
-    for(let extId in clients){
-        logger.debug("Periodically Hello to Extender ID : " + extId);
-        // logger.debug("Type of key:"+extId+" is "+typeof(clients[extId]));
-        worker.hello.requestHelloWorker(clients[extId], extId);
-
-    }
-    }
-    ,30*1000
-);
+// setInterval(function() {
+//     // logger.debug("Periodically Hello to Extender Keys : " + Object.keys(clients));
+//     for(let extId in clients){
+//         logger.debug("Periodically Hello to Extender ID : " + extId);
+//         // logger.debug("Type of key:"+extId+" is "+typeof(clients[extId]));
+//         worker.hello.requestHelloWorker(clients[extId], extId);
+//
+//     }
+//     }
+//     ,60*1000
+// );
 
 
 // while(true){
@@ -212,6 +208,11 @@ setInterval(function() {
 const rpc = require("./network/rpc.js");
 rpc.init(clients);
 
+
+/**  비정상 예외 처리 **/
+process.on('uncaughtException', function(error) {
+    logger.error('UnCaughtException occured : '+error);
+});
 
 
 

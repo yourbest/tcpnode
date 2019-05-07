@@ -33,6 +33,7 @@ const responseSystemSetServerWorker = function (header, bufData){
     logger.debug("ResponseSystemSetData data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
     // Result 저장
+    logger.info("responseSystemSetServerWorker return : "+ JSON.stringify(resResult.fields.data));
     influx.writeSystemSetServerResponse(resResult);
     return resResult.fields.data;
 }
