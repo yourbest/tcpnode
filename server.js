@@ -4,6 +4,7 @@ const logger = require("./logger/logger.js");
 // logger.debug (" label=>"+JSON.stringify(logger.transports[0]));
 const frame = require("./frame");
 const worker = require("./worker");
+const rcp = require("./network/rpc.js")
 
 const net = require('net');
 const maxConn = 10;
@@ -27,7 +28,7 @@ server.on('connection', socket => {
     // worker.hello.requestHelloWorker(socket, 1);
 
     //When Received Data
-    socket.on('data', data => {
+    socket.on('data', (data) => {
         let bufData = Buffer.from(data);
         logger.debug('Bytes read('+data.length+') : ' + bufData.toString('hex').toUpperCase());
 
@@ -53,7 +54,8 @@ server.on('connection', socket => {
             case 1:     //Hello (Send Response)
                 switch(header.fields.subMessageType){
                     case 1:
-                        worker.hello.responseHelloWorker(header, bufData);
+                        // worker.hello.responseHelloWorker(header, bufData); ==> To RCP
+                        rcp.responseResults[header.fields.extenderId] = data;
                         break;
                     default:
                         logger.error("ERROR: Wrong Hello Format : "+header.buffer().toString('hex').toUpperCase())
@@ -172,15 +174,16 @@ server.on('connection', socket => {
 // });
 
 server.listen(9999);
-console.log(`
+server.on('listening', () => {
+    console.log(`
  ______     ______     __   __     ______   ______     ______     __         __         ______     ______
 /\\  ___\\   /\\  __ \\   /\\ "-.\\ \\   /\\__  _\\ /\\  == \\   /\\  __ \\   /\\ \\       /\\ \\       /\\  ___\\   /\\  == \\
 \\ \\ \\____  \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\/_/\\ \\/ \\ \\  __<   \\ \\ \\/\\ \\  \\ \\ \\____  \\ \\ \\____  \\ \\  __\\   \\ \\  __<
  \\ \\_____\\  \\ \\_____\\  \\ \\_\\\\"\\_\\    \\ \\_\\  \\ \\_\\ \\_\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\
   \\/_____/   \\/_____/   \\/_/ \\/_/     \\/_/   \\/_/ /_/   \\/_____/   \\/_____/   \\/_____/   \\/_____/   \\/_/ /_/
-`);
-logger.info("--------Server started (9999) ---------------------");
-
+    `);
+    logger.info("--------Server started (9999) ---------------------");
+});
 
 /*********************************************************************
     Periodically Request Test

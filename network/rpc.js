@@ -12,6 +12,14 @@ const options = {
 };
 
 //TODO RCP 에서 extender의 return을 줘야 함. (비동기로 처리해야 하는데...)
+let responseResults = {};
+const EventEmitter = require('events');
+const rpcEvent = new EventEmitter();
+// rpcEvent.on('RES_EXTENDER', (callback, data) => {
+//     console.log("Response of Extender data : "+data.toString('hex').toUpperCase());
+//     callback(data);
+// });
+
 
 const rpcserv = new rpc.Server(options);
 
@@ -37,14 +45,28 @@ rpcserv.addMethod('getExtenderList', function (params, callback) {
 });
 
 /************* HELLO **********************/
-rpcserv.addMethod('requestHello', function (params, callback) {
+rpcserv.addMethod('requestHello', async function (params, callback) {
     let error, result;
     logger.info("RPC RequestHello Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
         if (Object.keys(params).length >= 1) { //extenderId
-            result = worker.hello.requestHelloWorker(clients[params.extenderId], params.extenderId);
+            //To Controller
+            await worker.hello.requestHelloWorker(clients[params.extenderId], params.extenderId);
+
+            //Event 등록
+            // rpcEvent.once('HELLO_RESPONSE', (callback, data) => {
+            //     console.log("Hello Response of Extender data : "+data.toString('hex').toUpperCase());
+            //     callback(data);
+            // });
+
+            // if (lock) await new Promise(resolve => bus.once('unlocked', resolve));
+
+            if(typeof clients[params.extenderId] == 'undefined') await new Promise(resolve => rpcEvent.once('RESPONCE_DONE', resolve));
+            await rpcEvent.emit('RESPONSE_DONE');
+            result = await worker.hello.responseHelloWorker(Buffer.from(responseResults[params.extenderId]));
+            await delete responseResults[params.extenderId];
         } else {
             error = {code: -32602, message: "Invalid params"};
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :" + JSON.stringify(params));
@@ -154,7 +176,8 @@ rpcserv.addMethod('requestDigitalGetStatus', function (params, callback) {
 });
 
 module.exports = {
-    init
+    init,
+    responseResults
 }
 
 

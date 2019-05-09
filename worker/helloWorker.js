@@ -22,8 +22,8 @@ const requestHelloWorker = async (socket, extenderId) => {
 }
 
 
-const responseHelloWorker = function (header, bufData){
-    if(typeof header != "object") return;
+const responseHelloWorker = async (bufData) => {
+    // if(typeof header != "object") return;
 
     logger.debug("Hello Response Buffer => "+bufData.toString('hex').toUpperCase())
     let resHello = frame.Hello.ResponseHello.allocate();
@@ -34,7 +34,7 @@ const responseHelloWorker = function (header, bufData){
     logger.debug("Extenter ID => "+resHello.fields.header.extenderId + "  // "+resHello.fields.data.extenderId)
 
     // DB 저장
-    influx.writeHelloResponse(resHello);
+    await influx.writeHelloResponse(resHello);
     logger.info("responseHelloWorker return : "+ JSON.stringify(resHello.fields.data));
     return resHello.fields.data;
 }
