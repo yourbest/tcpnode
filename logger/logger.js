@@ -1,6 +1,13 @@
 // config/logConfig.js
 "use strict"
 const appRoot = require('app-root-path');    // app root 경로를 가져오는 lib
+// console.log("app root = "+appRoot);
+// const fs = require("fs")
+// // Create the log directory if it does not exist
+// if (!fs.existsSync(`${appRoot}/logs`)) {
+//     fs.mkdirSync(`${appRoot}/logs`);
+// }
+
 const path = require('path');
 const winston = require('winston');            // winston lib
 const process = require('process');

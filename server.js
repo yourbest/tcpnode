@@ -4,7 +4,7 @@ const logger = require("./logger/logger.js");
 // logger.debug (" label=>"+JSON.stringify(logger.transports[0]));
 const frame = require("./frame");
 const worker = require("./worker");
-const rcp = require("./network/rpc.js")
+const rpc = require("./network/rpc.js")
 
 const net = require('net');
 const maxConn = 10;
@@ -55,7 +55,8 @@ server.on('connection', socket => {
                 switch(header.fields.subMessageType){
                     case 1:
                         // worker.hello.responseHelloWorker(header, bufData); ==> To RCP
-                        rcp.responseResults[header.fields.extenderId] = data;
+                        //rcp.responseResults[header.fields.extenderId] = data;
+                        rpc.rpcEvent.emit('HELLO_RESPONSE', data);
                         break;
                     default:
                         logger.error("ERROR: Wrong Hello Format : "+header.buffer().toString('hex').toUpperCase())
@@ -176,11 +177,11 @@ server.on('connection', socket => {
 server.listen(9999);
 server.on('listening', () => {
     console.log(`
- ______     ______     __   __     ______   ______     ______     __         __         ______     ______
-/\\  ___\\   /\\  __ \\   /\\ "-.\\ \\   /\\__  _\\ /\\  == \\   /\\  __ \\   /\\ \\       /\\ \\       /\\  ___\\   /\\  == \\
-\\ \\ \\____  \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\/_/\\ \\/ \\ \\  __<   \\ \\ \\/\\ \\  \\ \\ \\____  \\ \\ \\____  \\ \\  __\\   \\ \\  __<
- \\ \\_____\\  \\ \\_____\\  \\ \\_\\\\"\\_\\    \\ \\_\\  \\ \\_\\ \\_\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\
-  \\/_____/   \\/_____/   \\/_/ \\/_/     \\/_/   \\/_/ /_/   \\/_____/   \\/_____/   \\/_____/   \\/_____/   \\/_/ /_/
+ ______    ______    __   __    ______   ______    ______    __        __        ______    ______   
+/\\  ___\\  /\\  __ \\  /\\ "-.\\ \\  /\\__  _\\ /\\  == \\  /\\  __ \\  /\\ \\      /\\ \\      /\\  ___\\  /\\  == \\  
+\\ \\ \\____ \\ \\ \\/\\ \\ \\ \\ \\-.  \\ \\/_/\\ \\/ \\ \\  __<  \\ \\ \\/\\ \\ \\ \\ \\____ \\ \\ \\____ \\ \\  __\\  \\ \\  __<  
+ \\ \\_____\\ \\ \\_____\\ \\ \\_\\\\"\\_\\   \\ \\_\\  \\ \\_\\ \\_\\ \\ \\_____\\ \\ \\_____\\ \\ \\_____\\ \\ \\_____\\ \\ \\_\\ \\_\\
+  \\/_____/  \\/_____/  \\/_/ \\/_/    \\/_/   \\/_/ /_/  \\/_____/  \\/_____/  \\/_____/  \\/_____/  \\/_/ /_/  
     `);
     logger.info("--------Server started (9999) ---------------------");
 });
@@ -208,7 +209,7 @@ server.on('listening', () => {
 //
 // }
 
-const rpc = require("./network/rpc.js");
+/*** JSON RPC 서버 시작 **/
 rpc.init(clients);
 
 

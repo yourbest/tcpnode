@@ -12,13 +12,44 @@ const options = {
 };
 
 //TODO RCP 에서 extender의 return을 줘야 함. (비동기로 처리해야 하는데...)
-let responseResults = {};
+// let responseResults = {};
+
+
 const EventEmitter = require('events');
 const rpcEvent = new EventEmitter();
 // rpcEvent.on('RES_EXTENDER', (callback, data) => {
 //     console.log("Response of Extender data : "+data.toString('hex').toUpperCase());
 //     callback(data);
 // });
+// exports.resMsg = function() {
+//     return new Promise((resolve) => {
+//         socket.emit('getSchema', resolve);
+//     });
+// }
+// Event 임시 등록 (재사용 가능)
+rpcEvent.on('HELLO_RESPONSE', (data) => {
+    console.log("Hello Response of Extender data : "+data.toString('hex').toUpperCase());
+});
+
+
+const pEvent = require('p-event');
+const eventMsg = async () => {
+    let result;
+    try {
+        result = await pEvent(rpcEvent, 'HELLO_RESPONSE', {timeout: 30*1000});
+
+        // `emitter` emitted a `finish` event
+        console.log("Event Result => "+ result);
+    } catch (error) {
+        // `emitter` emitted an `error` event
+        console.log("Event Error => "+ error);
+    }
+    return result;
+};
+
+// P.then(function(data) { return doWork('text', data); });
+// P.then(data => doWork('text', data));
+
 
 
 const rpcserv = new rpc.Server(options);
@@ -55,18 +86,18 @@ rpcserv.addMethod('requestHello', async function (params, callback) {
             //To Controller
             await worker.hello.requestHelloWorker(clients[params.extenderId], params.extenderId);
 
-            //Event 등록
-            // rpcEvent.once('HELLO_RESPONSE', (callback, data) => {
+            let data;
+            // // Event 임시 등록 (재사용 가능)
+            // rpcEvent.on('HELLO_RESPONSE', (data) => {
             //     console.log("Hello Response of Extender data : "+data.toString('hex').toUpperCase());
-            //     callback(data);
             // });
 
             // if (lock) await new Promise(resolve => bus.once('unlocked', resolve));
 
-            if(typeof clients[params.extenderId] == 'undefined') await new Promise(resolve => rpcEvent.once('RESPONCE_DONE', resolve));
-            await rpcEvent.emit('RESPONSE_DONE');
-            result = await worker.hello.responseHelloWorker(Buffer.from(responseResults[params.extenderId]));
-            await delete responseResults[params.extenderId];
+            data = await eventMsg();
+
+            result = await worker.hello.responseHelloWorker(Buffer.from(data));
+            // await eventMessage = "";
         } else {
             error = {code: -32602, message: "Invalid params"};
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :" + JSON.stringify(params));
@@ -177,7 +208,8 @@ rpcserv.addMethod('requestDigitalGetStatus', function (params, callback) {
 
 module.exports = {
     init,
-    responseResults
+    rpcEvent,
+    // responseMessage
 }
 
 
