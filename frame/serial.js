@@ -17,8 +17,8 @@ const RequestSerialWriteData = Struct()
     .chars('uart3', 1, 'hex')  //1 (00h : don't care)
     .chars('uart4', 1, 'hex')  //1 (00h : don't care)
     .chars('uart5', 1, 'hex')  //1 (00h : don't care)
-    .word16Ube('dataLength')   //2
-    .chars('data', 200);  //200 (00h : don't care)
+    .word16Ube('dataLength');   //2
+    // .chars('data', 200);  //200 (00h : don't care)
 
 const ResponseSerialWriteData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : error)
@@ -33,30 +33,30 @@ const RequestSerialWriteReadData = Struct()
     .chars('uart3', 1, 'hex')  //1 (00h : don't care)
     .chars('uart4', 1, 'hex')  //1 (00h : don't care)
     .chars('uart5', 1, 'hex')  //1 (00h : don't care)
-    .word16Ube('dataLength')   //1
-    .chars('data', 200);  //200 (00h : don't care)
+    .word16Ube('dataLength');   //1
+    // .chars('data', 200);  //200 (00h : don't care)
 
 const ResponseSerialWriteReadData = Struct()
     .chars('result', 1, 'hex')  //1 (01h : success, etc : timeout)
-    .chars('reservedField', 3) //10
-    .word16Ube('dataLength')   //2
-    .chars('data', 32);  //MAX 32//TODO 가변길이라 실시간으로 생성해야 함. (ex : makeResponseSerialWriteReadData(datalength) return struct
+    .chars('reservedField', 3) //3
+    .word16Ube('dataLength');   //2
+    // .chars('data', 32);  //MAX 32//가변길이라  생략하고 로직으로 처리
 
-// for Hello ----------------------------------------- //
-const RequestSerialWrite = Struct()
-    .struct('header', Common.Header)
-    .struct('data', RequestSerialWriteData)
-    .struct('tail', Common.Tail);
+// for  ----------------------------------------- //
+// const RequestSerialWrite = Struct()
+//     .struct('header', Common.Header)
+//     .struct('data', RequestSerialWriteData)
+//     .struct('tail', Common.Tail);
 
 const ResponseSerialWrite = Struct()
     .struct('header', Common.Header)
     .struct('data', ResponseSerialWriteData)
     .struct('tail', Common.Tail);
 
-const RequestSerialWriteRead = Struct()
-    .struct('header', Common.Header)
-    .struct('data', RequestSerialWriteReadData)
-    .struct('tail', Common.Tail);
+// const RequestSerialWriteRead = Struct()
+//     .struct('header', Common.Header)
+//     .struct('data', RequestSerialWriteReadData)
+//     .struct('tail', Common.Tail);
 
 const ResponseSerialWriteRead = Struct()
     .struct('header', Common.Header)
@@ -69,8 +69,8 @@ module.exports = {
     ResponseSerialWriteData,
     RequestSerialWriteReadData,
     ResponseSerialWriteReadData,
-    RequestSerialWrite,
+    // RequestSerialWrite,
     ResponseSerialWrite,
-    RequestSerialWriteRead,
+    // RequestSerialWriteRead,
     ResponseSerialWriteRead
 }

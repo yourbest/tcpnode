@@ -27,6 +27,15 @@ const init = function(socks){
     });
 }
 
+
+/************* COMMON **********************/
+rpcserv.addMethod('getExtenderList', function (params, callback) {
+    let error, result;
+    result = Object.keys(clients);
+    logger.info("RPC getExtenderList => "+JSON.stringify(result));
+    callback(error, result);
+});
+
 /************* HELLO **********************/
 rpcserv.addMethod('requestHello', function (params, callback) {
     let error, result;
@@ -41,7 +50,7 @@ rpcserv.addMethod('requestHello', function (params, callback) {
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :" + JSON.stringify(params));
         }
     }
-    callback(error);
+    callback(error, result);
 });
 
 /************* SYSTEM **********************/
