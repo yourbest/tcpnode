@@ -215,7 +215,7 @@ rpc.init(clients);
 
 /**  비정상 예외 처리 **/
 process.on('uncaughtException', function(error) {
-    logger.error('UnCaughtException occured : '+error);
+    logger.error('UnCaughtException Occured : '+error);
 });
 
 

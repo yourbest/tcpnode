@@ -17,35 +17,21 @@ const options = {
 
 const EventEmitter = require('events');
 const rpcEvent = new EventEmitter();
-// rpcEvent.on('RES_EXTENDER', (callback, data) => {
-//     console.log("Response of Extender data : "+data.toString('hex').toUpperCase());
-//     callback(data);
-// });
-// exports.resMsg = function() {
-//     return new Promise((resolve) => {
-//         socket.emit('getSchema', resolve);
-//     });
-// }
-// Event 임시 등록 (재사용 가능)
-rpcEvent.on('HELLO_RESPONSE', (data) => {
-    console.log("Hello Response of Extender data : "+data.toString('hex').toUpperCase());
-});
-
 
 const pEvent = require('p-event');
-const eventMsg = async () => {
-    let result;
-    try {
-        result = await pEvent(rpcEvent, 'HELLO_RESPONSE', {timeout: 30*1000});
-
-        // `emitter` emitted a `finish` event
-        console.log("Event Result => "+ result);
-    } catch (error) {
-        // `emitter` emitted an `error` event
-        console.log("Event Error => "+ error);
-    }
-    return result;
-};
+// const eventMsg = async () => {
+//     let result;
+//     try {
+//         result = await pEvent(rpcEvent, 'HELLO_RESPONSE', {timeout: 30*1000});
+//
+//         // `emitter` emitted a `finish` event
+//         console.log("Event Result => "+ result);
+//     } catch (error) {
+//         // `emitter` emitted an `error` event
+//         console.log("Event Error => "+ error);
+//     }
+//     return result;
+// };
 
 // P.then(function(data) { return doWork('text', data); });
 // P.then(data => doWork('text', data));
@@ -82,22 +68,18 @@ rpcserv.addMethod('requestHello', async function (params, callback) {
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 1) { //extenderId
+        if (Object.keys(params).length >= 1 && params.extenderId) { //extenderId
             //To Controller
-            await worker.hello.requestHelloWorker(clients[params.extenderId], params.extenderId);
+            worker.hello.requestHelloWorker(clients[params.extenderId], params.extenderId);
 
-            let data;
-            // // Event 임시 등록 (재사용 가능)
-            // rpcEvent.on('HELLO_RESPONSE', (data) => {
-            //     console.log("Hello Response of Extender data : "+data.toString('hex').toUpperCase());
-            // });
-
-            // if (lock) await new Promise(resolve => bus.once('unlocked', resolve));
-
-            data = await eventMsg();
-
-            result = await worker.hello.responseHelloWorker(Buffer.from(data));
-            // await eventMessage = "";
+            await new Promise((resolve, reject) => {
+                rpcEvent.once('HELLO_RESPONSE', (msg) => {
+                    console.log("Hello Response of Extender data : "+msg.toString('hex').toUpperCase());
+                    resolve(msg);
+                });
+            }).then(async (data) => {
+                result = await worker.hello.responseHelloWorker(Buffer.from(data));
+            });
         } else {
             error = {code: -32602, message: "Invalid params"};
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :" + JSON.stringify(params));
