@@ -16,27 +16,8 @@ const options = {
 
 
 const EventEmitter = require('events');
-const rpcEvent = new EventEmitter();
-
 const pEvent = require('p-event');
-// const eventMsg = async () => {
-//     let result;
-//     try {
-//         result = await pEvent(rpcEvent, 'HELLO_RESPONSE', {timeout: 30*1000});
-//
-//         // `emitter` emitted a `finish` event
-//         console.log("Event Result => "+ result);
-//     } catch (error) {
-//         // `emitter` emitted an `error` event
-//         console.log("Event Error => "+ error);
-//     }
-//     return result;
-// };
-
-// P.then(function(data) { return doWork('text', data); });
-// P.then(data => doWork('text', data));
-
-
+const rpcEvent = new EventEmitter();
 
 const rpcserv = new rpc.Server(options);
 
@@ -66,20 +47,32 @@ rpcserv.addMethod('requestHello', async function (params, callback) {
     let error, result;
     logger.info("RPC RequestHello Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
-        error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
+        error = { code: -32101, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
         if (Object.keys(params).length >= 1 && params.extenderId) { //extenderId
             //To Controller
             worker.hello.requestHelloWorker(clients[params.extenderId], params.extenderId);
 
-            await new Promise((resolve, reject) => {
-                rpcEvent.once('HELLO_RESPONSE', (msg) => {
-                    console.log("Hello Response of Extender data : "+msg.toString('hex').toUpperCase());
-                    resolve(msg);
-                });
-            }).then(async (data) => {
-                result = await worker.hello.responseHelloWorker(Buffer.from(data));
+            rpcEvent.once('HELLO_RESPONSE', (msg) => {
+                logger.debug("EVENT HELLO_RESPONSE data : "+msg.toString('hex').toUpperCase());
             });
+            try{
+                let data = await pEvent(rpcEvent, 'HELLO_RESPONSE', {timeout: 10*1000});
+                result = await worker.hello.responseHelloWorker(Buffer.from(data));
+            } catch (err){
+                logger.error("ERROR : during HELLO_RESPONSE event processing ==>"+err);
+                rpcEvent.off('HELLO_RESPONSE', ()=>{});
+                error = { code: -32102, message: "Event Error : "+err};
+            }
+
+            // await new Promise((resolve, reject) => {
+            //     rpcEvent.once('HELLO_RESPONSE', (msg) => {
+            //         console.log("Hello Response of Extender data : "+msg.toString('hex').toUpperCase());
+            //         resolve(msg);
+            //     });
+            // }).then(async (data) => {
+            //     result = await worker.hello.responseHelloWorker(Buffer.from(data));
+            // });
         } else {
             error = {code: -32602, message: "Invalid params"};
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :" + JSON.stringify(params));
@@ -89,14 +82,28 @@ rpcserv.addMethod('requestHello', async function (params, callback) {
 });
 
 /************* SYSTEM **********************/
-rpcserv.addMethod('requestSystemSetServer', function (params, callback) {
+rpcserv.addMethod('requestSystemSetServer', async function (params, callback) {
     let error, result;
     logger.info("RPC RequestSystemSetServer Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 3) { //extenderId,IP,port
-            result = worker.system.requestSystemSetServerWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+        if (Object.keys(params).length >= 3 && params.extenderId) { //extenderId,IP,port
+            //To Controller
+            worker.system.requestSystemSetServerWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+
+            rpcEvent.once('SYSTEM_SET_SERVER_RESPONSE', (msg) => {
+                logger.debug("EVENT SYSTEM_SET_SERVER_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            try{
+                let data = await pEvent(rpcEvent, 'SYSTEM_SET_SERVER_RESPONSE', {timeout: 10*1000});
+                result = await worker.system.responseSystemSetServerWorker((Buffer.from(data));
+            } catch (err){
+                logger.error("ERROR : during SYSTEM_SET_SERVER_RESPONSE event processing ==>"+err);
+                rpcEvent.off('SYSTEM_SET_SERVER_RESPONSE', ()=>{});
+                error = { code: -32102, message: "Event Error : "+err};
+            }
+
         } else {
             error = { code: -32602, message: "Invalid params" };
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :"+ JSON.stringify(params));
@@ -106,14 +113,27 @@ rpcserv.addMethod('requestSystemSetServer', function (params, callback) {
 });
 
 /************* SERIAL **********************/
-rpcserv.addMethod('requestSerialWrite', function (params, callback) {
+rpcserv.addMethod('requestSerialWrite', async function (params, callback) {
     let error, result;
     logger.info("RPC requestSerialWrite Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 3) { //extenderId,IP,port
-            result = worker.system.requestSerialWriteWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+        if (Object.keys(params).length >= 3 && params.extenderId) { //extenderId,IP,port
+            //To Controller
+            worker.system.requestSerialWriteWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+
+            rpcEvent.once('SERIAL_WRITE_RESPONSE', (msg) => {
+                logger.debug("EVENT SERIAL_WRITE_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            try{
+                let data = await pEvent(rpcEvent, 'SERIAL_WRITE_RESPONSE', {timeout: 10*1000});
+                result = await worker.serial.responseSerialWriteWorker((Buffer.from(data)));
+            } catch (err){
+                logger.error("ERROR : during SERIAL_WRITE_RESPONSE event processing ==>"+err);
+                rpcEvent.off('SYSTEM_SET_SERVER_RESPONSE', ()=>{});
+                error = { code: -32102, message: "Event Error : "+err};
+            }
         } else {
             error = { code: -32602, message: "Invalid params" };
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :"+ JSON.stringify(params));
@@ -122,14 +142,27 @@ rpcserv.addMethod('requestSerialWrite', function (params, callback) {
     callback(error, result);
 });
 
-rpcserv.addMethod('requestSerialWriteRead', function (params, callback) {
+rpcserv.addMethod('requestSerialWriteRead', async function (params, callback) {
     let error, result;
     logger.info("RPC requestSerialWriteRead Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 3) { //extenderId,IP,port
-            result = worker.system.requestSerialWriteReadWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+        if (Object.keys(params).length >= 3 && params.extenderId) { //extenderId,IP,port
+            //To Controller
+            worker.system.requestSerialWriteReadWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+
+            rpcEvent.once('SERIAL_WRITE_READ_RESPONSE', (msg) => {
+                logger.debug("EVENT SERIAL_WRITE_READ_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            try{
+                let data = await pEvent(rpcEvent, 'SERIAL_WRITE_READ_RESPONSE', {timeout: 10*1000});
+                result = await worker.serial.responseSerialWriteReadWorker((Buffer.from(data)));
+            } catch (err){
+                logger.error("ERROR : during SERIAL_WRITE_READ_RESPONSE event processing ==>"+err);
+                rpcEvent.off('SERIAL_WRITE_READ_RESPONSE', ()=>{});
+                error = { code: -32102, message: "Event Error : "+err};
+            }
         } else {
             error = { code: -32602, message: "Invalid params" };
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :"+ JSON.stringify(params));
@@ -139,14 +172,27 @@ rpcserv.addMethod('requestSerialWriteRead', function (params, callback) {
 });
 
 /************* CURRENT SENSOR **********************/
-rpcserv.addMethod('requestCurrentGetConfiguration', function (params, callback) {
+rpcserv.addMethod('requestCurrentGetConfiguration', async function (params, callback) {
     let error, result;
     logger.info("RPC requestCurrentGetConfiguration Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 1) { //extenderId
-            result = worker.current.requestCurrentGetConfigurationWorker(clients[params.extenderId], params.extenderId);
+        if (Object.keys(params).length >= 1 && params.extenderId) { //extenderId
+            //To Controller
+            worker.current.requestCurrentGetConfigurationWorker(clients[params.extenderId], params.extenderId);
+
+            rpcEvent.once('CURRENT_GET_CONFIGURATION_RESPONSE', (msg) => {
+                logger.debug("EVENT CURRENT_GET_CONFIGURATION_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            try{
+                let data = await pEvent(rpcEvent, 'CURRENT_GET_CONFIGURATION_RESPONSE', {timeout: 10*1000});
+                result = await worker.current.responseCurrentGetConfigurationWorker((Buffer.from(data)));
+            } catch (err){
+                logger.error("ERROR : during CURRENT_GET_CONFIGURATION_RESPONSE event processing ==>"+err);
+                rpcEvent.off('CURRENT_GET_CONFIGURATION_RESPONSE', ()=>{});
+                error = { code: -32102, message: "Event Error : "+err};
+            }
         } else {
             error = { code: -32602, message: "Invalid params" };
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :"+ JSON.stringify(params));
@@ -155,14 +201,27 @@ rpcserv.addMethod('requestCurrentGetConfiguration', function (params, callback) 
     callback(error, result);
 });
 
-rpcserv.addMethod('requestCurrentGetStatus', function (params, callback) {
+rpcserv.addMethod('requestCurrentGetStatus', async function (params, callback) {
     let error, result;
     logger.info("RPC requestCurrentGetStatus Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 1) { //extenderId
-            result = worker.current.requestCurrentGetStatusWorker(clients[params.extenderId], params.extenderId);
+        if (Object.keys(params).length >= 1 && params.extenderId) { //extenderId
+            //To Controller
+            worker.current.requestCurrentGetStatusWorker(clients[params.extenderId], params.extenderId);
+
+            rpcEvent.once('CURRENT_GET_STATUS_RESPONSE', (msg) => {
+                logger.debug("EVENT CURRENT_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            try{
+                let data = await pEvent(rpcEvent, 'CURRENT_GET_STATUS_RESPONSE', {timeout: 10*1000});
+                result = await worker.current.responseCurrentGetStatusWorker((Buffer.from(data)));
+            } catch (err){
+                logger.error("ERROR : during CURRENT_GET_STATUS_RESPONSE event processing ==>"+err);
+                rpcEvent.off('CURRENT_GET_STATUS_RESPONSE', ()=>{});
+                error = { code: -32102, message: "Event Error : "+err};
+            }
         } else {
             error = { code: -32602, message: "Invalid params" };
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :"+ JSON.stringify(params));
@@ -172,14 +231,27 @@ rpcserv.addMethod('requestCurrentGetStatus', function (params, callback) {
 });
 
 /************* DIGITAL **********************/
-rpcserv.addMethod('requestDigitalGetStatus', function (params, callback) {
+rpcserv.addMethod('requestDigitalGetStatus', async function (params, callback) {
     let error, result;
     logger.info("RPC requestDigitalGetStatus Params "+JSON.stringify(params));
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 1) { //extenderId
-            result = worker.current.requestCurrentGetStatusWorker(clients[params.extenderId], params.extenderId);
+        if (Object.keys(params).length >= 1 && params.extenderId) { //extenderId
+            //To Controller
+            worker.digital.requestDigitalGetStatusWorker(clients[params.extenderId], params.extenderId);
+
+            rpcEvent.once('DIGITAL_GET_STATUS_RESPONSE', (msg) => {
+                logger.debug("EVENT DIGITAL_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            try{
+                let data = await pEvent(rpcEvent, 'DIGITAL_GET_STATUS_RESPONSE', {timeout: 10*1000});
+                result = await worker.current.responseCurrentGetStatusWorker((Buffer.from(data)));
+            } catch (err){
+                logger.error("ERROR : during DIGITAL_GET_STATUS_RESPONSE event processing ==>"+err);
+                rpcEvent.off('DIGITAL_GET_STATUS_RESPONSE', ()=>{});
+                error = { code: -32102, message: "Event Error : "+err};
+            }
         } else {
             error = { code: -32602, message: "Invalid params" };
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :"+ JSON.stringify(params));
