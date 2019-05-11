@@ -119,9 +119,9 @@ rpcserv.addMethod('requestSerialWrite', async function (params, callback) {
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 3 && params.extenderId) { //extenderId,IP,port
+        if (Object.keys(params).length >= 8 && params.extenderId) { //extenderId, port, uart1, uart2, uart3, uart4, uart5, data
             //To Controller
-            worker.system.requestSerialWriteWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+            worker.system.requestSerialWriteWorker(clients[params.extenderId], params.extenderId, params.port, params.uart1, params.uart2, params.uart3, params.uart4, params.uart5, params.data);
 
             rpcEvent.once('SERIAL_WRITE_RESPONSE', (msg) => {
                 logger.debug("EVENT SERIAL_WRITE_RESPONSE data : "+msg.toString('hex').toUpperCase());
@@ -148,9 +148,9 @@ rpcserv.addMethod('requestSerialWriteRead', async function (params, callback) {
     if(typeof clients[params.extenderId] == 'undefined') {
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
-        if (Object.keys(params).length >= 3 && params.extenderId) { //extenderId,IP,port
+        if (Object.keys(params).length >= 8 && params.extenderId) { //extenderId,IP,port
             //To Controller
-            worker.system.requestSerialWriteReadWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+            worker.system.requestSerialWriteReadWorker(clients[params.extenderId], params.extenderId, params.port, params.uart1, params.uart2, params.uart3, params.uart4, params.uart5, params.data);
 
             rpcEvent.once('SERIAL_WRITE_READ_RESPONSE', (msg) => {
                 logger.debug("EVENT SERIAL_WRITE_READ_RESPONSE data : "+msg.toString('hex').toUpperCase());
