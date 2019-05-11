@@ -66,7 +66,8 @@ server.on('connection', socket => {
             case 2:     //System Setting [rpc]
                 switch(header.fields.subMessageType){
                     case 4:
-                        worker.system.responseSystemSetServerWorker(header, bufData);
+                        // worker.system.responseSystemSetServerWorker(header, bufData);
+                        rpc.rpcEvent.emit('SYSTEM_SET_SERVER_RESPONSE', data);
                         break;
                     default:
                         logger.error("ERROR: Wrong SystemSetting Format : "+header.buffer().toString('hex').toUpperCase())
@@ -78,10 +79,13 @@ server.on('connection', socket => {
             case 11:    //Serial [rpc]
                 switch(header.fields.subMessageType){
                     case 1:
-                        worker.serial.responseSerialWriteWorker(header, bufData);
+                        // worker.serial.responseSerialWriteWorker(header, bufData);
+                        rpc.rpcEvent.emit('SERIAL_WRITE_RESPONSE', data);
                         break;
+
                     case 2:
-                        worker.serial.responseSerialWriteReadWorker(header, bufData);
+                        // worker.serial.responseSerialWriteReadWorker(header, bufData);
+                        rpc.rpcEvent.emit('SERIAL_WRITE_READ_RESPONSE', data);
                         break;
                     default:
                         logger.error("ERROR: Wrong Serial Format : "+header.buffer().toString('hex').toUpperCase())
@@ -93,10 +97,12 @@ server.on('connection', socket => {
             case 13:    //Current Sensor [rpc]
                 switch(header.fields.subMessageType){
                     case 2:
-                        worker.current.responseCurrentGetConfigurationWorker(header, bufData);
+                        // worker.current.responseCurrentGetConfigurationWorker(header, bufData);
+                        rpc.rpcEvent.emit('CURRENT_GET_CONFIGURATION_RESPONSE', data);
                         break;
                     case 3:
-                        worker.current.responseCurrentGetStatusWorker(header, bufData);
+                        // worker.current.responseCurrentGetStatusWorker(header, bufData);
+                        rpc.rpcEvent.emit('CURRENT_GET_STATUS_RESPONSE', data);
                         break;
                     default:
                         logger.error("ERROR: Wrong Currrnt Format : "+header.buffer().toString('hex').toUpperCase())
@@ -106,7 +112,8 @@ server.on('connection', socket => {
             case 14:    //Digital Input [rpc]
                 switch(header.fields.subMessageType){
                     case 3:
-                        worker.digital.responseDigitalGetStatusWorker(header, bufData);
+                        // worker.digital.responseDigitalGetStatusWorker(header, bufData);
+                        rpc.rpcEvent.emit('DIGITAL_GET_STATUS_RESPONSE', data);
                         break;
                     default:
                         logger.error("ERROR: Wrong DigitalInput Format : "+header.buffer().toString('hex').toUpperCase())
