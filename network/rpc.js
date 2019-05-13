@@ -97,7 +97,7 @@ rpcserv.addMethod('requestSystemSetServer', async function (params, callback) {
             });
             try{
                 let data = await pEvent(rpcEvent, 'SYSTEM_SET_SERVER_RESPONSE', {timeout: 10*1000});
-                result = await worker.system.responseSystemSetServerWorker((Buffer.from(data));
+                result = await worker.system.responseSystemSetServerWorker((Buffer.from(data)));
             } catch (err){
                 logger.error("ERROR : during SYSTEM_SET_SERVER_RESPONSE event processing ==>"+err);
                 rpcEvent.off('SYSTEM_SET_SERVER_RESPONSE', ()=>{});
