@@ -1,8 +1,9 @@
 'use strict'
 
-const rpc = require('node-json-rpc');
+// const rpc = require('node-json-rpc');
 const logger = require("../logger/logger.js")
 const worker = require('../worker')
+const Server = require('./rpcserver');
 
 const options = {
     port: 5080,
@@ -19,7 +20,7 @@ const EventEmitter = require('events');
 const pEvent = require('p-event');
 const rpcEvent = new EventEmitter();
 
-const rpcserv = new rpc.Server(options);
+const rpcserv = new Server(options);
 
 let clients = {};
 const init = function(socks){
