@@ -236,6 +236,8 @@ var Server = function (options) {
   /* Private: Validate incomming request */
   var requestHandler = function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader("Access-Control-Allow-Methods", "POST");
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, origin, content-type, accept");
 
     if (conf.auth) {
       conf.auth.check (req, res, function (req, res, user) {

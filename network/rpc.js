@@ -12,10 +12,6 @@ const options = {
     strict: false
 };
 
-//TODO RCP 에서 extender의 return을 줘야 함. (비동기로 처리해야 하는데...)
-// let responseResults = {};
-
-
 const EventEmitter = require('events');
 const pEvent = require('p-event');
 const rpcEvent = new EventEmitter();
@@ -91,7 +87,7 @@ rpcserv.addMethod('requestSystemSetServer', async function (params, callback) {
     } else {
         if (Object.keys(params).length >= 3 && params.extenderId) { //extenderId,IP,port
             //To Controller
-            worker.system.requestSystemSetServerWorker(clients[params.extenderId], params.extenderId, params.ip, params.port);
+            worker.system.requestSystemSetServerWorker(clients[params.extenderId], params.extenderId, params.hostIp, params.hostPort);
 
             rpcEvent.once('SYSTEM_SET_SERVER_RESPONSE', (msg) => {
                 logger.debug("EVENT SYSTEM_SET_SERVER_RESPONSE data : "+msg.toString('hex').toUpperCase());
