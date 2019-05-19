@@ -23,7 +23,7 @@ let simulator = (connName) => {
 
     // When receive server send back data.
     socket.on('data', function (data) {
-        console.log('Server return data : ' + Buffer.from(data).toString('hex').toUpperCase());
+        console.log('['+connName+']Server return data : ' + Buffer.from(data).toString('hex').toUpperCase());
     });
 
     // When connection disconnected.
@@ -61,11 +61,11 @@ let simulator = (connName) => {
 let clients = [];
 
 clients[0] = simulator('1');
-clients[0].write(Buffer.from('840100016401000300000085', 'hex'));
+// clients[0].write(Buffer.from('840100016401000300000085', 'hex'));
 clients[1] = simulator('2');
-clients[1].write(Buffer.from('840100026401000300000085', 'hex'));
+// clients[1].write(Buffer.from('840100026401000300000085', 'hex'));
 clients[2] = simulator('3');
-clients[2].write(Buffer.from('840100036401000300000085', 'hex'));
+// clients[2].write(Buffer.from('840100036401000300000085', 'hex'));
 
 
 
@@ -74,10 +74,8 @@ clients[2].write(Buffer.from('840100036401000300000085', 'hex'));
 setInterval(()=>{
     //for Digital Input
     for(let i = 0; i<clients.length; i++){
-        setTimeout(()=>{console.log("...")}, 2*1000);
-        clients[i].write(genDigitalData(zeroFill(4,i+1)));
-        setTimeout(()=>{console.log("...")}, 2*1000);
-        clients[i].write(genCurrentData(zeroFill(4,i+1)));
+        setTimeout(()=>{clients[i].write(genDigitalData(zeroFill(4,i+1)));}, 1*1000);
+        setTimeout(()=>{clients[i].write(genCurrentData(zeroFill(4,i+1)));}, 6*1000);
     }
 }, 15*1000);
 
@@ -90,7 +88,7 @@ function genDigitalData(extenderId) {
     bufData.writeInt8(genRandNumHex(0, 1),1);
     bufData.writeInt8(genRandNumHex(0, 1),2);
     let bufFinish = Buffer.from('85', 'hex');
-    console.log(Buffer.concat([bufCommon, bufData, bufFinish]));
+    // console.log(Buffer.concat([bufCommon, bufData, bufFinish]));
     return Buffer.concat([bufCommon, bufData, bufFinish]);
 }
 
@@ -105,7 +103,7 @@ function genCurrentData(extenderId) {
     bufData.writeInt8(genRandNumHex(1, 3),5);
 
     let bufFinish = Buffer.from('85', 'hex');
-    console.log(Buffer.concat([bufCommon, bufData, bufFinish]));
+    // console.log(Buffer.concat([bufCommon, bufData, bufFinish]));
     return Buffer.concat([bufCommon, bufData, bufFinish]);
 }
 
