@@ -1,9 +1,9 @@
 'use strict';
 
 const logger = require("../logger/logger.js")
-const frame = require('../frame')
-const influxDigital = require('../influx/digitalInflux.js');
-const influxCurrent = require('../influx/currentInflux.js');
+let frame = require('../frame')
+let influxDigital = require('../influx/digitalInflux.js');
+let influxCurrent = require('../influx/currentInflux.js');
 
 const responseNotifyStatusWorker = function (socket, extenderId, subMessageType){
     let resNotify = frame.Notify.ResponseNotify.allocate();
@@ -29,7 +29,7 @@ const pushNotifyDiStatusWorker = function (header, bufData){
     resResult._setBuff(bufData);
 
     logger.info("pushNotifyDiStatusWorker => "+resResult.buffer().toString('hex').toUpperCase())
-    logger.debug("pushNotifyDiStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
+    // logger.debug("pushNotifyDiStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
     // Result 저장
     logger.info("pushNotifyDiStatusWorker return : "+ JSON.stringify(resResult.fields.data));
@@ -43,7 +43,7 @@ const pushNotifyCurrentStatusWorker = function (header, bufData){
     resResult._setBuff(bufData);
 
     logger.info("pushNotifyCurrentStatusWorker => "+resResult.buffer().toString('hex').toUpperCase())
-    logger.debug("pushNotifyCurrentStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
+    // logger.debug("pushNotifyCurrentStatusWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
     // Result 저장
     logger.info("pushNotifyCurrentStatusWorker return : "+ JSON.stringify(resResult.fields.data));

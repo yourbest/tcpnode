@@ -29,7 +29,12 @@ function writeDigitalGetStatusResponse (frame){
             di1Status: frame.fields.data.di1Status,
             di2Status: frame.fields.data.di2Status,
         })
-        .then(() => logger.debug("Influx writeDigitalGetStatusResponse() successful "+frame.buffer().toString('hex').toUpperCase()))
+        .then(() => {
+            // logger.debug("Influx writeDigitalGetStatusResponse() successful "+frame.buffer().toString('hex').toUpperCase());
+            return frame;
+        }, (err)=>{
+            return err;
+        })
         .catch(function(err){
             logger.error(err, "Influx writeDigitalGetStatusResponse() Failed "+frame.buffer().toString('hex').toUpperCase());
         });

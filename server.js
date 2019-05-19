@@ -7,7 +7,7 @@ const worker = require("./worker");
 const rpc = require("./network/rpc.js")
 
 const net = require('net');
-const maxConn = 10;
+const maxConn = 100;
 //All active connections are stored in this object together with their client name
 let clients = {};
 

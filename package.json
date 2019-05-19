@@ -34,7 +34,8 @@
     "struct": "0.0.12",
     "uuid": "^3.3.2",
     "winston": "^3.2.1",
-    "winston-daily-rotate-file": "^3.8.0"
+    "winston-daily-rotate-file": "^3.8.0",
+    "zero-fill": "^2.2.3"
   },
   "devDependencies": {},
   "private": true

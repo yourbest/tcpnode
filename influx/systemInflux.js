@@ -28,7 +28,13 @@ function writeSystemSetServerResponse (frame){
         .field({
             count: 1
         })
-        .then(() => logger.debug("Influx writeSystemSetResponse() successful "+frame.buffer().toString('hex').toUpperCase()))
+        // .then(() => logger.debug("Influx writeSystemSetResponse() successful "+frame.buffer().toString('hex').toUpperCase()))
+        .then(() => {
+            // logger.debug("Influx writeSystemSetResponse() successful "+frame.buffer().toString('hex').toUpperCase());
+            return frame;
+        }, (err)=>{
+            return err;
+        })
         .catch(function(err){
             logger.error(err, "Influx writeSystemSetResponse() Failed "+frame.buffer().toString('hex').toUpperCase());
         });

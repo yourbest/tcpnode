@@ -21,6 +21,7 @@ client.schema('current', fieldCurrentSchema, tagCurrentSchema, {
 });
 
 function writeCurrentGetStatusResponse (frame){
+    logger.debug("writeCurrentGetStatusResponse input==>"+frame.buffer().toString('hex').toUpperCase());
     client.write('current')
         .tag({
             extenderId: frame.fields.header.extenderId,
@@ -32,7 +33,13 @@ function writeCurrentGetStatusResponse (frame){
             ch1Current: frame.fields.data.ch1Current,
             ch2Current: frame.fields.data.ch2Current,
         })
-        .then(() => logger.debug("Influx writeCurrentGetStatusResponse() successful "+frame.buffer().toString('hex').toUpperCase()))
+        // .then(() => logger.debug("Influx writeCurrentGetStatusResponse() successful "+frame.buffer().toString('hex').toUpperCase()))
+        .then(() => {
+            // logger.debug("Influx writeCurrentGetStatusResponse() successful "+frame.buffer().toString('hex').toUpperCase());
+            return frame;
+        }, (err)=>{
+            return err;
+        })
         .catch(function(err){
             logger.error(err, "Influx writeCurrentGetStatusResponse() Failed "+frame.buffer().toString('hex').toUpperCase());
         });

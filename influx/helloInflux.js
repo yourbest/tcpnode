@@ -34,7 +34,13 @@ function writeHelloResponse (frame){
         .field({
             count: 1
         })
-        .then(() => logger.debug("Influx writeHelloResponse() successful "+frame.buffer().toString('hex').toUpperCase()))
+        // .then(() => logger.debug("Influx writeHelloResponse() successful "+frame.buffer().toString('hex').toUpperCase()))
+        .then(() => {
+            // logger.debug("Influx writeHelloResponse() successful "+frame.buffer().toString('hex').toUpperCase());
+            return frame;
+        }, (err)=>{
+            return err;
+        })
         .catch(function(err){
             logger.error(err, "Influx writeHelloResponse() Failed "+frame.buffer().toString('hex').toUpperCase());
         });
