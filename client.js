@@ -68,16 +68,23 @@ clients[2] = simulator('3');
 // clients[2].write(Buffer.from('840100036401000300000085', 'hex'));
 
 
-
-
 /** for Extender loop **/
-setInterval(()=>{
-    //for Digital Input
+setInterval(async ()=>{
     for(let i = 0; i<clients.length; i++){
-        setTimeout(()=>{clients[i].write(genDigitalData(zeroFill(4,i+1)));}, 1*1000);
-        setTimeout(()=>{clients[i].write(genCurrentData(zeroFill(4,i+1)));}, 6*1000);
+        await sleep(2000);
+        clients[i].write(genDigitalData(zeroFill(4,i+1)));
+        await sleep(2000);
+        clients[i].write(genCurrentData(zeroFill(4,i+1)));
     }
-}, 15*1000);
+}, 20*1000);
+
+// setInterval(()=>{
+//     //for Digital Input
+//     for(let i = 0; i<clients.length; i++){
+//         setTimeout(()=>{clients[i].write(genDigitalData(zeroFill(4,i+1)));}, (i+1)*1*1000);
+//         setTimeout(()=>{clients[i].write(genCurrentData(zeroFill(4,i+1)));}, (i+1)*3*1000);
+//     }
+// }, 20*1000);
 
 
 function genDigitalData(extenderId) {
@@ -110,4 +117,10 @@ function genCurrentData(extenderId) {
 function genRandNumHex(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
     // return dec.toString(16);// hex = dec.toString(16); // === "7b"
+}
+
+const sleep = (ms) => {
+    return new Promise(resolve=>{
+        setTimeout(resolve,ms)
+    })
 }

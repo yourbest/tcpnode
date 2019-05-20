@@ -28,6 +28,7 @@ function writeDigitalGetStatusResponse (frame){
         .field({
             di1Status: frame.fields.data.di1Status,
             di2Status: frame.fields.data.di2Status,
+            di3Status: frame.fields.data.di3Status,
         })
         .then(() => {
             // logger.debug("Influx writeDigitalGetStatusResponse() successful "+frame.buffer().toString('hex').toUpperCase());
