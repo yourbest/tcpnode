@@ -7,7 +7,7 @@ const Server = require('./rpcserver');
 
 const options = {
     port: 5080,
-    host: 'localhost',
+    host: '0.0.0.0',
     path: '/',
     strict: false
 };
