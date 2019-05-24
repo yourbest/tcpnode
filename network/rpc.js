@@ -268,7 +268,8 @@ module.exports = {
  * RPC Client
  * ==> curl -d '{"jsonrpc": "2.0", "method": "test", "params": [1,2], "id": null}' 127.0.0.1:5080
  * ==> (on Windows) curl --proxy "" -H "Content-Type: application/json" -d "{\"jsonrpc\": \"2.0\", \"method\": \"requestHello\", \"params\": {\"extenderId\":1}, \"id\": null}" http://127.0.0.1:5080
-
+ * ==> (on *NIX) curl -H "Content-Type: application/json" -d "{'jsonrpc': '2.0', 'method': 'requestHello', 'params': {'extenderId':1}, 'id': 1234}" http://127.0.0.1:5080
+ curl -H "Content-Type: application/json" -d "{'jsonrpc': '2.0', 'method': 'getExtenderList', 'params': {'extenderId':1}, 'id': 1234}" http://127.0.0.1:5080
  */
 /**
  var rpc = require('node-json-rpc');

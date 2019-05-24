@@ -236,31 +236,36 @@ var Server = function (options) {
   /* Private: Validate incomming request */
   var requestHandler = function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader("Access-Control-Allow-Methods", "POST");
+    res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET");
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, origin, content-type, accept");
 
-    if (conf.auth) {
-      conf.auth.check (req, res, function (req, res, user) {
+    console.log("---------INCOMING REQUEST METHOD IS : "+req.method+"-----------------");
+    if(req.method == 'OPTIONS') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('okay');
+    } else {
+      if (conf.auth) {
+        conf.auth.check(req, res, function (req, res, user) {
+          var data = '';
+          req.on('data', function (bytes) {
+            data += bytes;
+          });
+
+          req.on('end', function () {
+            res.user = user;
+            dataHandler(res, data);
+          });
+        });
+      } else {
         var data = '';
         req.on('data', function (bytes) {
           data += bytes;
         });
 
         req.on('end', function () {
-          res.user = user;
           dataHandler(res, data);
         });
-      });
-    }
-    else {
-      var data = '';
-      req.on('data', function (bytes) {
-        data += bytes;
-      });
-
-      req.on('end', function () {
-        dataHandler(res, data);
-      });
+      }
     }
   };
 

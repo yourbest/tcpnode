@@ -220,6 +220,28 @@ server.on('listening', () => {
 rpc.init(clients);
 
 
+
+
+/** for Extender Check Periodically  **/
+setInterval(async ()=>{
+    for(let i = 0; i<clients.length; i++){
+        await sleep(2000);
+        clients[i].write(genDigitalData(zeroFill(4,i+1)));
+        await sleep(2000);
+        clients[i].write(genCurrentData(zeroFill(4,i+1)));
+    }
+}, 20*1000);
+
+const sleep = (ms) => {
+    return new Promise(resolve=>{
+        setTimeout(resolve,ms)
+    })
+}
+
+
+
+
+
 /**  비정상 예외 처리 **/
 process.on('uncaughtException', function(error) {
     logger.error('UnCaughtException Occured : '+error);
