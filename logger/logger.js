@@ -1,6 +1,6 @@
 // config/logConfig.js
 "use strict"
-const appRoot = require('app-root-path');    // app root 경로를 가져오는 lib
+// const appRoot = require('app-root-path');    // app root 경로를 가져오는 lib
 // console.log("app root = "+appRoot);
 // const fs = require("fs")
 // // Create the log directory if it does not exist
@@ -24,7 +24,7 @@ const options = {
     file: {
         level: 'info',
         datePattern: "YYYY-MM-DD",
-        filename: `${appRoot}/logs/%DATE%-logs.log`, // 로그파일을 남길 경로
+        filename: './logs/%DATE%-logs.log', // 로그파일을 남길 경로
         handleExceptions: true,
         json: false,
         maxsize: '20m', // 5MB
