@@ -60,7 +60,7 @@ var Server = function (options) {
   var conf = {
     functions: {},
 
-    host: options.host || '127.0.0.1',
+    host: options.host || '0.0.0.0',
     queue: options.queue || 512,
 
     hash: options.hash || null,
