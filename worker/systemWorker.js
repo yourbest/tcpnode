@@ -25,7 +25,7 @@ const requestSystemSetServerWorker = function (socket, extenderId, serverIp, ser
 }
 
 
-const responseSystemSetServerWorker = function (header, bufData){
+const responseSystemSetServerWorker = function (bufData){
     let resResult = frame.System.ResponseSystemSet.allocate();
     resResult._setBuff(bufData);
 

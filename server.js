@@ -66,7 +66,7 @@ server.on('connection', socket => {
             case 2:     //System Setting [rpc]
                 switch(header.fields.subMessageType){
                     case 4:
-                        // worker.system.responseSystemSetServerWorker(header, bufData);
+                        // worker.system.responseSystemSetServerWorker(bufData);
                         rpc.rpcEvent.emit('SYSTEM_SET_SERVER_RESPONSE', data);
                         break;
                     default:
@@ -123,11 +123,11 @@ server.on('connection', socket => {
             case 100:   //Notify
                 switch(header.fields.subMessageType){
                     case 1:
-                        worker.notify.pushNotifyDiStatusWorker(header, bufData)
+                        worker.notify.pushNotifyDiStatusWorker(bufData)
                         worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId, 1);
                         break;
                     case 2:
-                        worker.notify.pushNotifyCurrentStatusWorker(header, bufData)
+                        worker.notify.pushNotifyCurrentStatusWorker(bufData)
                         worker.notify.responseNotifyStatusWorker(clients[header.fields.extenderId], header.fields.extenderId,2);
                         break;
                     default:

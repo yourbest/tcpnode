@@ -24,7 +24,7 @@ const responseNotifyStatusWorker = function (socket, extenderId, subMessageType)
     // return reqHello;
 }
 
-const pushNotifyDiStatusWorker = function (header, bufData){
+const pushNotifyDiStatusWorker = function (bufData){
     let resResult = frame.Notify.PushNotifyDiStatus.allocate();
     resResult._setBuff(bufData);
 
@@ -38,7 +38,7 @@ const pushNotifyDiStatusWorker = function (header, bufData){
     return resResult.fields.data.result;
 }
 
-const pushNotifyCurrentStatusWorker = function (header, bufData){
+const pushNotifyCurrentStatusWorker = function (bufData){
     let resResult = frame.Notify.PushNotifyCurrentStatus.allocate();
     resResult._setBuff(bufData);
 

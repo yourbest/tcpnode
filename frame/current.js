@@ -5,7 +5,7 @@ const Common = require('./common.js');
 
 /**
  */
-const CurrentReportType = Struct()
+const CurrentChSetting = Struct()
     .word16Ube('triggerValue1')         //0~65535mA
     .word16Ube('triggerValue2')         //0~65535mA
     .chars('reservedField', 1) //1
@@ -14,8 +14,8 @@ const CurrentReportType = Struct()
 const RequestCurrentSetConfigurationData = Struct()
     .chars('currentReportType', 1)         //Not Used
     .word16Ube('periodTime') //2           //Not Used
-    .struct('ch1Setting', CurrentReportType)  //CH1
-    .struct('ch2Setting', CurrentReportType)  //CH2
+    .struct('ch1Setting', CurrentChSetting)  //CH1
+    .struct('ch2Setting', CurrentChSetting)  //CH2
     .chars('reservedField', 2); //1
 
 const ResponseCurrentSetConfigurationData = Struct()
@@ -28,8 +28,8 @@ const RequestCurrentGetConfigurationData = Struct()
 const ResponseCurrentGetConfigurationData = Struct()
     .chars('currentReportType', 1)         //Not Used
     .word16Ube('periodTime') //2           //Not Used
-    .struct('ch1Setting', CurrentReportType)  //CH1
-    .struct('ch2Setting', CurrentReportType)  //CH2
+    .struct('ch1Setting', CurrentChSetting)  //CH1
+    .struct('ch2Setting', CurrentChSetting)  //CH2
     .chars('reservedField', 2); //1
 
 const RequestCurrentGetStatusData = Struct()

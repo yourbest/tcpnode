@@ -70,14 +70,18 @@ clients[2] = simulator('3');
 
 
 /** for Extender loop **/
-setInterval(async ()=>{
-    for(let i = 0; i<clients.length; i++){
-        await sleep(2000);
-        clients[i].write(genDigitalData(zeroFill(4,i+1)));
-        await sleep(2000);
-        clients[i].write(genCurrentData(zeroFill(4,i+1)));
-    }
-}, 20*1000);
+// setInterval(async ()=>{
+//     for(let i = 0; i<clients.length; i++){
+//         await sleep(1000);
+//         clients[i].write(genDigitalData(zeroFill(4,i+1)));
+//         await sleep(1000);
+//         clients[i].write(genCurrentData(zeroFill(4,i+1)));
+//     }
+// }, 2000*1000);
+
+        clients[0].write(genDigitalData(zeroFill(4,1)));
+        clients[0].write(genCurrentData(zeroFill(4,1)));
+
 
 // setInterval(()=>{
 //     //for Digital Input

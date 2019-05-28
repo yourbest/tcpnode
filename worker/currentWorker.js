@@ -23,10 +23,9 @@ const requestCurrentGetConfigurationWorker = function (socket, extenderId){
 }
 // (6) (2) (data) (1)
 // 840200000D02   0011  020000007800B4004F0082009600480000   85
-const responseCurrentGetConfigurationWorker = function (header, bufData){
+const responseCurrentGetConfigurationWorker = function (bufData){
     let resResult = frame.Current.ResponseCurrentGetConfiguration.allocate();
     resResult._setBuff(bufData);
-
     logger.info("responseCurrentWorker Response => "+resResult.buffer().toString('hex').toUpperCase())
     logger.debug("responseCurrentWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
 
@@ -55,7 +54,7 @@ const requestCurrentGetStatusWorker = function (socket, extenderId){
 
 // (6) (2)   (data)  (1)
 // 840200000D02  0011  020000007800B4004F0082 009600480000  85
-const responseCurrentGetStatusWorker = function (header, bufData){
+const responseCurrentGetStatusWorker = function (bufData){
     let resResult = frame.Current.ResponseCurrentGetStatus.allocate();
     resResult._setBuff(bufData);
 

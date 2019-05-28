@@ -94,7 +94,7 @@ rpcserv.addMethod('requestSystemSetServer', async function (params, callback) {
             });
             try{
                 let data = await pEvent(rpcEvent, 'SYSTEM_SET_SERVER_RESPONSE', {timeout: 10*1000});
-                result = await worker.system.responseSystemSetServerWorker((Buffer.from(data)));
+                result = await worker.system.responseSystemSetServerWorker(Buffer.from(data));
             } catch (err){
                 logger.error("ERROR : during SYSTEM_SET_SERVER_RESPONSE event processing ==>"+err);
                 rpcEvent.off('SYSTEM_SET_SERVER_RESPONSE', ()=>{});
@@ -125,7 +125,7 @@ rpcserv.addMethod('requestSerialWrite', async function (params, callback) {
             });
             try{
                 let data = await pEvent(rpcEvent, 'SERIAL_WRITE_RESPONSE', {timeout: 10*1000});
-                result = await worker.serial.responseSerialWriteWorker((Buffer.from(data)));
+                result = await worker.serial.responseSerialWriteWorker(Buffer.from(data));
             } catch (err){
                 logger.error("ERROR : during SERIAL_WRITE_RESPONSE event processing ==>"+err);
                 rpcEvent.off('SYSTEM_SET_SERVER_RESPONSE', ()=>{});
@@ -154,7 +154,7 @@ rpcserv.addMethod('requestSerialWriteRead', async function (params, callback) {
             });
             try{
                 let data = await pEvent(rpcEvent, 'SERIAL_WRITE_READ_RESPONSE', {timeout: 10*1000});
-                result = await worker.serial.responseSerialWriteReadWorker((Buffer.from(data)));
+                result = await worker.serial.responseSerialWriteReadWorker(Buffer.from(data));
             } catch (err){
                 logger.error("ERROR : during SERIAL_WRITE_READ_RESPONSE event processing ==>"+err);
                 rpcEvent.off('SERIAL_WRITE_READ_RESPONSE', ()=>{});
@@ -176,7 +176,7 @@ rpcserv.addMethod('requestCurrentGetConfiguration', async function (params, call
         error = { code: -32001, message: "No Extender[id=>"+params.extenderId+"] is connected" };
     } else {
         if (Object.keys(params).length >= 1 && params.extenderId) { //extenderId
-            //To Controller
+            // To Controller
             worker.current.requestCurrentGetConfigurationWorker(clients[params.extenderId], params.extenderId);
 
             rpcEvent.once('CURRENT_GET_CONFIGURATION_RESPONSE', (msg) => {
@@ -184,7 +184,7 @@ rpcserv.addMethod('requestCurrentGetConfiguration', async function (params, call
             });
             try{
                 let data = await pEvent(rpcEvent, 'CURRENT_GET_CONFIGURATION_RESPONSE', {timeout: 10*1000});
-                result = await worker.current.responseCurrentGetConfigurationWorker((Buffer.from(data)));
+                result = await worker.current.responseCurrentGetConfigurationWorker(Buffer.from(data));
             } catch (err){
                 logger.error("ERROR : during CURRENT_GET_CONFIGURATION_RESPONSE event processing ==>"+err);
                 rpcEvent.off('CURRENT_GET_CONFIGURATION_RESPONSE', ()=>{});
@@ -213,7 +213,7 @@ rpcserv.addMethod('requestCurrentGetStatus', async function (params, callback) {
             });
             try{
                 let data = await pEvent(rpcEvent, 'CURRENT_GET_STATUS_RESPONSE', {timeout: 10*1000});
-                result = await worker.current.responseCurrentGetStatusWorker((Buffer.from(data)));
+                result = await worker.current.responseCurrentGetStatusWorker(Buffer.from(data));
             } catch (err){
                 logger.error("ERROR : during CURRENT_GET_STATUS_RESPONSE event processing ==>"+err);
                 rpcEvent.off('CURRENT_GET_STATUS_RESPONSE', ()=>{});
@@ -243,7 +243,7 @@ rpcserv.addMethod('requestDigitalGetStatus', async function (params, callback) {
             });
             try{
                 let data = await pEvent(rpcEvent, 'DIGITAL_GET_STATUS_RESPONSE', {timeout: 10*1000});
-                result = await worker.current.responseCurrentGetStatusWorker((Buffer.from(data)));
+                result = await worker.current.responseCurrentGetStatusWorker(Buffer.from(data));
             } catch (err){
                 logger.error("ERROR : during DIGITAL_GET_STATUS_RESPONSE event processing ==>"+err);
                 rpcEvent.off('DIGITAL_GET_STATUS_RESPONSE', ()=>{});

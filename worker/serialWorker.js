@@ -42,7 +42,7 @@ const requestSerialWriteWorker = function (socket, extenderId, port, uart1, uart
 }
 
 
-const responseSerialWriteWorker = function (header, bufData){
+const responseSerialWriteWorker = function (bufData){
     let resResult = frame.Serial.ResponseSerialWrite.allocate();
     resResult._setBuff(bufData);
 
@@ -94,7 +94,7 @@ const requestSerialWriteReadWorker = function (socket, extenderId, port, uart1, 
     // return reqHello;
 }
 
-const responseSerialWriteReadWorker = function (header, bufData){
+const responseSerialWriteReadWorker = function (bufData){
     //TODO 실시간으로 struct 생성해야 함.
     let resResult = frame.Serial.ResponseSerialWriteRead.allocate();
     logger.debug("responseSerialWriteReadWorker resResult length="+resResult.length());
@@ -106,7 +106,7 @@ const responseSerialWriteReadWorker = function (header, bufData){
 
     // Result 저장
     // influx.writeSystemSetServerResponse(resResult);
-    //TODO 세팅한 이력을 모두 저정해야 할까?
+    //TODO 세팅한 이력을 모두 저장해야 할까?
     console.log("-----------> "+ (frame.Common.Header.length() + frame.Serial.ResponseSerialWriteReadData.length()));
     let rslt = {
         'result': resResult.fields.data.result,

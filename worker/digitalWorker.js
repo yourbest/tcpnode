@@ -21,7 +21,7 @@ const requestDigitalGetStatusWorker = function (socket, extenderId){
     // return reqHello;
 }
 
-const responseDigitalGetStatusWorker = function (header, bufData){
+const responseDigitalGetStatusWorker = function (bufData){
     let resResult = frame.Digital.ResponseDigitalGetStatus.allocate();
     resResult._setBuff(bufData);
 
