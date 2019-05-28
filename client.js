@@ -1,7 +1,7 @@
 'use strict';
 
 const Net = require('net');
-const zeroFill = require('zero-fill')
+const zeroFill = require('zero-fill');
 
 // This function create and return a net.Socket object to represent TCP client.
 let simulator = (connName) => {

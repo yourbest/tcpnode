@@ -151,32 +151,35 @@ server.on('connection', socket => {
     //Emitted if the socket times out from inactivity. This is only to notify that the socket has been idle. The user must manually close the connection.
     socket.on('timeout', () => {
         logger.info("EVENT :: timeout------ then whill close()");
-        socket.end();
-        socket.close();
+        socket.end();//FIN
+        socket.destroy();
     });
 
     //Emitted when the server closes. Note that if connections exist, this event is not emitted until all connections are ended.
     socket.on('close', () => {
         logger.info("EVENT :: close");
         //When a client disconnecs, remove the name and connection
-        clients=[];
+        socket.end();
+        socket.destroy();
+        delete clients[clientName];
         logger.info("Concurrent Connections are "+Object.keys(clients).length)
         //Send a message to every active client that someone just left the room
         // broadcast(`- ${clientname} has left the room\r\n Active Users : ${clientCount}\r\n`);
     });
 
+    //Emitted when the other end of the socket sends a FIN packet, thus ending the readable side of the socket.
     socket.on('end', () => {
         logger.info("EVENT :: end");
+        socket.destroy();
         delete clients[clientName];
         logger.info("Concurrent Connections are "+Object.keys(clients).length)
     });
-
 
     //Emitted when an error occurs. Unlike net.Socket, the 'close' event will not be emitted directly following this event unless server.close() is manually called
     socket.on('error', error => {
         logger.error(error,  "EVENT :: error");
         // connection.write(`Error : ${error}`);
-        delete clients[clientName];
+        // delete clients[clientName];
         logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
         socket.end();
     });
@@ -233,24 +236,24 @@ rpc.init(clients);
 
 
 /** for Extender Check Periodically  **/
+const util = require('./network/getutil.js');
+
 setInterval(async ()=>{
-    for(let i = 0; i<clients.length; i++){
-        await sleep(2000);
-        clients[i].write(genDigitalData(zeroFill(4,i+1)));
-        await sleep(2000);
-        clients[i].write(genCurrentData(zeroFill(4,i+1)));
-    }
-}, 20*1000);
+    Object.keys(clients).forEach(async (key) => {
+        let client = clients[key];
+        logger.info("PERIOD SENDING : EXTENDER_ID : ["+key+"] ["+client.remoteAddress+":"+client.remotePort+"]");
+        if(!client.destroyed) client.write(util.genGetCurrentStatusData(key));
+        await sleep(1000*5);
+        if(!client.destroyed) client.write(util.genGetDigitalStatusData(key));
+        await sleep(1000*10);
+    });
+}, 2*60*1000);
 
 const sleep = (ms) => {
     return new Promise(resolve=>{
-        setTimeout(resolve,ms)
+        setTimeout(resolve, ms)
     })
 }
-
-
-
-
 
 /**  비정상 예외 처리 **/
 process.on('uncaughtException', function(error) {
