@@ -21,7 +21,7 @@ server.maxConnections = maxConn;
 server.on('connection', socket => {
     // let clientname = socket.remoteAddress+"."+socket.remotePort;
     // clients[clientname] = socket;
-    // logger.info("New "+Object.keys(clients).length+"th connected remote address => "+clientname)
+    logger.info("New Connect Trial from remote address => "+socket.remoteAddress);
     let clientName;
 
     //초기 접속시 hello 요청
@@ -203,7 +203,7 @@ server.on('listening', () => {
  \\ \\_____\\ \\ \\_____\\ \\ \\_\\\\"\\_\\   \\ \\_\\  \\ \\_\\ \\_\\ \\ \\_____\\ \\ \\_____\\ \\ \\_____\\ \\ \\_____\\ \\ \\_\\ \\_\\
   \\/_____/  \\/_____/  \\/_/ \\/_/    \\/_/   \\/_/ /_/  \\/_____/  \\/_____/  \\/_____/  \\/_____/  \\/_/ /_/  
     `);
-    logger.info("--------Server started (9999) ---------------------");
+    logger.info("Controller running on 0.0.0.0:9999 ---------------------");
 });
 
 /*********************************************************************
@@ -232,9 +232,6 @@ server.on('listening', () => {
 /*** JSON RPC 서버 시작 **/
 rpc.init(clients);
 
-
-
-
 /** for Extender Check Periodically  **/
 const util = require('./network/getutil.js');
 
@@ -245,7 +242,7 @@ setInterval(async ()=>{
         if(!client.destroyed) client.write(util.genGetCurrentStatusData(key));
         await sleep(1000*5);
         if(!client.destroyed) client.write(util.genGetDigitalStatusData(key));
-        await sleep(1000*10);
+        await sleep(1000*5);
     });
 }, 2*60*1000);
 

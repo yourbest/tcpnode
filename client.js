@@ -61,26 +61,27 @@ let simulator = (connName) => {
 
 let clients = [];
 
-clients[0] = simulator('1');
-// clients[0].write(Buffer.from('840100016401000300000085', 'hex'));
-clients[1] = simulator('2');
-// clients[1].write(Buffer.from('840100026401000300000085', 'hex'));
-clients[2] = simulator('3');
-// clients[2].write(Buffer.from('840100036401000300000085', 'hex'));
-
+setInterval( ()=>{
+    if (typeof clients[0] == 'undefined') clients[0] = simulator('256');
+    // clients[0].write(Buffer.from('840100016401000300000085', 'hex'));
+    if (typeof clients[1] == 'undefined') clients[1] = simulator('257');
+    // clients[1].write(Buffer.from('840100026401000300000085', 'hex'));
+    if (typeof clients[2] == 'undefined') clients[2] = simulator('258');
+    // clients[2].write(Buffer.from('840100036401000300000085', 'hex'));
+}, 1*1000);
 
 /** for Extender loop **/
-// setInterval(async ()=>{
-//     for(let i = 0; i<clients.length; i++){
-//         await sleep(1000);
-//         clients[i].write(genDigitalData(zeroFill(4,i+1)));
-//         await sleep(1000);
-//         clients[i].write(genCurrentData(zeroFill(4,i+1)));
-//     }
-// }, 2000*1000);
+setInterval(async ()=>{
+    for(let i = 0; i<clients.length; i++){
+        await sleep(1000*5);
+        clients[i].write(genDigitalData(zeroFill(4,i+100)));
+        await sleep(1000*5);
+        clients[i].write(genCurrentData(zeroFill(4,i+100)));
+    }
+}, 2*60*1000);
 
-        clients[0].write(genDigitalData(zeroFill(4,1)));
-        clients[0].write(genCurrentData(zeroFill(4,1)));
+        // clients[0].write(genDigitalData(zeroFill(4,1)));
+        // clients[0].write(genCurrentData(zeroFill(4,1)));
 
 
 // setInterval(()=>{

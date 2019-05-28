@@ -8,13 +8,13 @@
   },
   "pkg": {
     "targets": [
-      "node10"
+      "node10", "linux", "win","x86", "x64"
     ]
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "pkg .",
-    "start": "pm2 start server.js"
+    "start": "./server.js"
   },
   "repository": "git+https://github.com/yourbest/tcpnode.git",
   "keywords": [],
