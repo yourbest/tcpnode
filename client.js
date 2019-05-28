@@ -7,7 +7,8 @@ const zeroFill = require('zero-fill')
 let simulator = (connName) => {
 
     const option = {
-        host: '35.200.87.136',
+        //host: '35.200.87.136',
+        host: '127.0.0.1',
         port: 9999
     }
 

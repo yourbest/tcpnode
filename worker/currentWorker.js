@@ -21,7 +21,8 @@ const requestCurrentGetConfigurationWorker = function (socket, extenderId){
     // return reqHello;
     //TODO callback 사용해야 함. extender로 부터 response를 받은 후에 return 해야 함.
 }
-
+// (6) (2) (data) (1)
+// 840200000D02   0011  020000007800B4004F0082009600480000   85
 const responseCurrentGetConfigurationWorker = function (header, bufData){
     let resResult = frame.Current.ResponseCurrentGetConfiguration.allocate();
     resResult._setBuff(bufData);
@@ -52,6 +53,8 @@ const requestCurrentGetStatusWorker = function (socket, extenderId){
     // return reqHello;
 }
 
+// (6) (2)   (data)  (1)
+// 840200000D02  0011  020000007800B4004F0082 009600480000  85
 const responseCurrentGetStatusWorker = function (header, bufData){
     let resResult = frame.Current.ResponseCurrentGetStatus.allocate();
     resResult._setBuff(bufData);
