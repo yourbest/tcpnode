@@ -27,6 +27,7 @@ server.on('connection', socket => {
     //초기 접속시 hello 요청
     // worker.hello.requestHelloWorker(socket, 1);
 
+    socket.setTimeout(0);
     //When Received Data
     socket.on('data', (data) => {
         let bufData = Buffer.from(data);
@@ -147,22 +148,31 @@ server.on('connection', socket => {
         // clientname = connection.remoteAddress+" "+connection.remotePort;
     });
 
-    //When Timeout
+    //Emitted if the socket times out from inactivity. This is only to notify that the socket has been idle. The user must manually close the connection.
     socket.on('timeout', () => {
-        logger.info("EVENT :: timeout------");
-            });
+        logger.info("EVENT :: timeout------ then whill close()");
+        socket.end();
+        socket.close();
+    });
 
-    //A close event is emmited when a connection is disconnected from the server
+    //Emitted when the server closes. Note that if connections exist, this event is not emitted until all connections are ended.
     socket.on('close', () => {
         logger.info("EVENT :: close");
         //When a client disconnecs, remove the name and connection
-        delete clients[clientName];
+        clients=[];
         logger.info("Concurrent Connections are "+Object.keys(clients).length)
         //Send a message to every active client that someone just left the room
         // broadcast(`- ${clientname} has left the room\r\n Active Users : ${clientCount}\r\n`);
     });
 
-    //Handle error events
+    socket.on('end', () => {
+        logger.info("EVENT :: end");
+        delete clients[clientName];
+        logger.info("Concurrent Connections are "+Object.keys(clients).length)
+    });
+
+
+    //Emitted when an error occurs. Unlike net.Socket, the 'close' event will not be emitted directly following this event unless server.close() is manually called
     socket.on('error', error => {
         logger.error(error,  "EVENT :: error");
         // connection.write(`Error : ${error}`);
