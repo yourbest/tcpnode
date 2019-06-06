@@ -32,7 +32,7 @@ const responseDigitalGetStatusWorker = function (bufData){
     logger.info("responseDigitalGetStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influx.writeDigitalGetStatusResponse(resResult);
 
-    return resResult.fields.data.result;
+    return resResult.fields.data;
 }
 
 module.exports = {

@@ -53,7 +53,7 @@ const responseSerialWriteWorker = function (bufData){
     // influx.writeSystemSetServerResponse(resResult);
     logger.info("responseSerialWriteWorker return : "+ JSON.stringify(resResult.fields.data));
     //TODO 이력을 모두 저정해야 할까?
-    return resResult.fields.data.result;
+    return resResult.fields.data;
 }
 
 const requestSerialWriteReadWorker = function (socket, extenderId, port, uart1, uart2, uart3, uart4, uart5, data){

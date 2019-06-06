@@ -254,6 +254,7 @@ rpcserv.addMethod('requestDigitalGetStatus', async function (params, callback) {
             logger.error(error.toLocaleString(), "RPC ERROR : Wrong Params :"+ JSON.stringify(params));
         }
     }
+
     callback(error, result);
 });
 

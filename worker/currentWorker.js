@@ -28,11 +28,11 @@ const responseCurrentGetConfigurationWorker = function (bufData){
     resResult._setBuff(bufData);
     logger.info("responseCurrentWorker Response => "+resResult.buffer().toString('hex').toUpperCase())
     logger.debug("responseCurrentWorker data size => "+resResult.fields.header.dataLength + " == "+ resResult.get('data').length())
-
+logger.debug("current report type ==>"+resResult.fields.data.currentReportType);
     // Result 저장
     //Get Config 이력 저장 안함 (reportType, period time, ch1/ch2 setting)
     logger.info("responseCurrentGetConfigurationWorker return : "+ JSON.stringify(resResult.fields.data));
-    return resResult.fields.data.result;
+    return resResult.fields.data;
 }
 
 const requestCurrentGetStatusWorker = function (socket, extenderId){
@@ -65,7 +65,7 @@ const responseCurrentGetStatusWorker = function (bufData){
     logger.info("responseCurrentGetStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influx.writeCurrentGetStatusResponse(resResult);
 
-    return resResult.fields.data.result;
+    return resResult.fields.data;
 }
 
 module.exports = {

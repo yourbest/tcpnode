@@ -22,8 +22,31 @@ let simulator = (connName) => {
     // client.setEncoding('utf8');
 
     // When receive server send back data.
+    //TODO 똑바로 응답하는 코드 만들어야 함.
     socket.on('data', function (data) {
-        console.log('['+connName+']Server return data : ' + Buffer.from(data).toString('hex').toUpperCase());
+        let bufData = Buffer.from(data);;
+        let hexData = bufData.toString('hex').toUpperCase();
+        console.log('['+connName+'] from Server data : ' + hexData);
+
+        let extId = hexData.substring(4,8);
+        let resp = '8402'+extId;
+        console.log('extId:'+extId+', code:'+hexData.substring(8,12));
+        switch(hexData.substring(8,12)){
+            case '0D02'://Current Get Configuration Response => 8402 0100 0D02 0011020000007800B4004F008200960048000085
+                resp +='0D020011020000007800B4004F008200960048000085';
+                break;
+            case '0D03'://Current Get Status Response => 840201000D030006000001007D0185
+                resp +='0D030006000001007D0185';
+                break;
+            case '0E03'://Digital Get Status Response => 840201000E03000301010185
+                resp +='0E03000301010185';
+                break;
+            default:
+                break;
+        }
+        console.log('Response Data ==>'+resp);
+        socket.write(Buffer.from(resp,'hex'));
+
     });
 
     // When connection disconnected.
@@ -76,15 +99,13 @@ setInterval(async ()=>{
         await sleep(2000);
         clients[i].write(genCurrentData(zeroFill(4,i+100)));
     }
-}, 20*1000);
+}, 60*1000);
 
-// setInterval(()=>{
-//     //for Digital Input
-//     for(let i = 0; i<clients.length; i++){
-//         setTimeout(()=>{clients[i].write(genDigitalData(zeroFill(4,i+1)));}, (i+1)*1*1000);
-//         setTimeout(()=>{clients[i].write(genCurrentData(zeroFill(4,i+1)));}, (i+1)*3*1000);
-//     }
-// }, 20*1000);
+/** just once **/
+// for(let i = 0; i<clients.length; i++){
+//     clients[i].write(genDigitalData(zeroFill(4,i+100)));
+//     clients[i].write(genCurrentData(zeroFill(4,i+100)));
+// }
 
 
 function genDigitalData(extenderId) {

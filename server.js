@@ -99,6 +99,7 @@ server.on('connection', socket => {
             // case 12:    //Relay
             //     break;
             case 13:    //Current Sensor [rpc]
+                logger.info('CURRENT :: Type '+header.fields.subMessageType);
                 switch(header.fields.subMessageType){
                     case 2:
                         // worker.current.responseCurrentGetConfigurationWorker(header, bufData);
@@ -107,6 +108,7 @@ server.on('connection', socket => {
                     case 3:
                         // worker.current.responseCurrentGetStatusWorker(header, bufData);
                         rpc.rpcEvent.emit('CURRENT_GET_STATUS_RESPONSE', data);
+                        rpc.rpcEvent.emit('PERIOD_CURRENT_GET_STATUS_RESPONSE', data);
                         break;
                     default:
                         logger.error("ERROR: Wrong Currrnt Format : "+header.buffer().toString('hex').toUpperCase())
@@ -114,10 +116,12 @@ server.on('connection', socket => {
                 }
                 break;
             case 14:    //Digital Input [rpc]
+                logger.info('DIGITAL :: Type '+header.fields.subMessageType);
                 switch(header.fields.subMessageType){
                     case 3:
                         // worker.digital.responseDigitalGetStatusWorker(header, bufData);
                         rpc.rpcEvent.emit('DIGITAL_GET_STATUS_RESPONSE', data);
+                        rpc.rpcEvent.emit('PERIOD_DIGITAL_GET_STATUS_RESPONSE', data);
                         break;
                     default:
                         logger.error("ERROR: Wrong DigitalInput Format : "+header.buffer().toString('hex').toUpperCase())
@@ -125,6 +129,7 @@ server.on('connection', socket => {
                 }
                 break;
             case 100:   //Notify
+                logger.info('NOTIFY--------');
                 switch(header.fields.subMessageType){
                     case 1:
                         worker.notify.pushNotifyDiStatusWorker(bufData)
@@ -153,14 +158,14 @@ server.on('connection', socket => {
 
     //Emitted if the socket times out from inactivity. This is only to notify that the socket has been idle. The user must manually close the connection.
     socket.on('timeout', () => {
-        logger.info("EVENT :: timeout------ then whill close()");
+        logger.info("Socket timeout EVENT :: [from "+socket.remoteAddress+":"+socket.remotePort+"] ---------");
         socket.end();//FIN
         socket.destroy();
     });
 
     //Emitted when the server closes. Note that if connections exist, this event is not emitted until all connections are ended.
     socket.on('close', () => {
-        logger.info("EVENT :: close");
+        logger.info("Socket close EVENT :: [from "+socket.remoteAddress+":"+socket.remotePort+"] ---------");
         //When a client disconnecs, remove the name and connection
         socket.end();
         socket.destroy();
@@ -172,7 +177,7 @@ server.on('connection', socket => {
 
     //Emitted when the other end of the socket sends a FIN packet, thus ending the readable side of the socket.
     socket.on('end', () => {
-        logger.info("EVENT :: end");
+        logger.info("Socket end EVENT :: [from "+socket.remoteAddress+":"+socket.remotePort+"] ---------");
         socket.destroy();
         delete clients[clientName];
         logger.info("Concurrent Connections are "+Object.keys(clients).length)
@@ -180,7 +185,7 @@ server.on('connection', socket => {
 
     //Emitted when an error occurs. Unlike net.Socket, the 'close' event will not be emitted directly following this event unless server.close() is manually called
     socket.on('error', error => {
-        logger.error(error,  "EVENT :: error");
+        logger.info("Socket error EVENT :: [from "+socket.remoteAddress+":"+socket.remotePort+"] ---------"+error);
         // connection.write(`Error : ${error}`);
         // delete clients[clientName];
         logger.info("Concurrent Connections are  => "+Object.keys(clients).length)
@@ -237,14 +242,29 @@ rpc.init(clients);
 
 /** for Extender Check Periodically  **/
 const util = require('./network/getutil.js');
+const pEvent = require('p-event');
 
 setInterval(async ()=>{
     Object.keys(clients).forEach(async (key) => {
         let client = clients[key];
         logger.info("PERIOD SENDING : EXTENDER_ID : ["+key+"] ["+client.remoteAddress+":"+client.remotePort+"]");
-        if(!client.destroyed) client.write(util.genGetCurrentStatusData(key));
+        if(!client.destroyed) {
+            rpc.rpcEvent.once('PERIOD_CURRENT_GET_STATUS_RESPONSE', (msg) => {
+                logger.debug("EVENT PERIOD_CURRENT_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            client.write(util.genGetCurrentStatusData(key));
+            let data = await pEvent(rpc.rpcEvent, 'PERIOD_CURRENT_GET_STATUS_RESPONSE', {timeout: 10*1000});
+            await worker.current.responseCurrentGetStatusWorker(Buffer.from(data));
+        }
         await sleep(1000*5);
-        if(!client.destroyed) client.write(util.genGetDigitalStatusData(key));
+        if(!client.destroyed) {
+            rpc.rpcEvent.once('PERIOD_DIGITAL_GET_STATUS_RESPONSE', (msg) => {
+                logger.debug("EVENT PERIOD_DIGITAL_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            });
+            client.write(util.genGetDigitalStatusData(key));
+            let data = await pEvent(rpc.rpcEvent, 'PERIOD_DIGITAL_GET_STATUS_RESPONSE', {timeout: 10*1000});
+            await worker.digital.responseDigitalGetStatusWorker(Buffer.from(data));
+        }
         await sleep(1000*5);
     });
 }, 2*60*1000);

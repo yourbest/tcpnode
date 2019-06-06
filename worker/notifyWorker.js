@@ -35,7 +35,7 @@ const pushNotifyDiStatusWorker = function (bufData){
     logger.info("pushNotifyDiStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influxDigital.writeDigitalGetStatusResponse(resResult);
 
-    return resResult.fields.data.result;
+    return resResult.fields.data;
 }
 
 const pushNotifyCurrentStatusWorker = function (bufData){
@@ -49,7 +49,7 @@ const pushNotifyCurrentStatusWorker = function (bufData){
     logger.info("pushNotifyCurrentStatusWorker return : "+ JSON.stringify(resResult.fields.data));
     influxCurrent.writeCurrentGetStatusResponse(resResult);
 
-    return resResult.fields.data.result;
+    return resResult.fields.data;
 }
 
 

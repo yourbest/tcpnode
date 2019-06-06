@@ -1,20 +1,26 @@
 'use strict'
 
-const Influx = require('influxdb-nodejs');
+const logger = require("../logger/logger.js")
 
+const Influx = require('influxdb-nodejs');
 const client =new Influx('http://tcpnode:tcpnode@localhost:8086/tcpnode');
 
+client.showDatabases()
+    .then(databases => {
+        if (!databases.includes('tcpnode')) {
+            logger.info("Database 'tcpnode' is absent. so, trying to create it.")
+            return client.createDatabase();
+        }
+    })
+    // .then(
+    //     return this.showDatabases();
+    // )
+    .catch(err => {
+        logger.error('Errors on influxdb. Confirm InfluxDB is running :'+err);
+        process.exit(1);
+    })
+
 module.exports = client;
-
-
-
-
-
-
-
-
-
-
 
 
 

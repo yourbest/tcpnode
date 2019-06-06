@@ -12,7 +12,7 @@ const CurrentChSetting = Struct()
     .word8Ube('calibrationPercentage'); //0~255%
 
 const RequestCurrentSetConfigurationData = Struct()
-    .chars('currentReportType', 1)         //Not Used
+    .word8Ube('currentReportType')         //Not Used
     .word16Ube('periodTime') //2           //Not Used
     .struct('ch1Setting', CurrentChSetting)  //CH1
     .struct('ch2Setting', CurrentChSetting)  //CH2
@@ -26,7 +26,7 @@ const RequestCurrentGetConfigurationData = Struct()
     .chars('reservedField', 10);         //Not Used
 
 const ResponseCurrentGetConfigurationData = Struct()
-    .chars('currentReportType', 1)         //Not Used
+    .word8Ube('currentReportType')         //Not Used
     .word16Ube('periodTime') //2           //Not Used
     .struct('ch1Setting', CurrentChSetting)  //CH1
     .struct('ch2Setting', CurrentChSetting)  //CH2
