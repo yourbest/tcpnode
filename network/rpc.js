@@ -243,7 +243,7 @@ rpcserv.addMethod('requestDigitalGetStatus', async function (params, callback) {
             });
             try{
                 let data = await pEvent(rpcEvent, 'DIGITAL_GET_STATUS_RESPONSE', {timeout: 10*1000});
-                result = await worker.current.responseCurrentGetStatusWorker(Buffer.from(data));
+                result = await worker.digital.responseDigitalGetStatusWorker(Buffer.from(data));
             } catch (err){
                 logger.error("ERROR : during DIGITAL_GET_STATUS_RESPONSE event processing ==>"+err);
                 rpcEvent.off('DIGITAL_GET_STATUS_RESPONSE', ()=>{});

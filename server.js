@@ -33,8 +33,16 @@ server.on('connection', socket => {
         let bufData = Buffer.from(data);
         logger.debug('Bytes read('+data.length+') : ' + bufData.toString('hex').toUpperCase());
 
+        //logger.debug("FIRST BYTE : "+ bufData[0]);
+        //logger.debug("LAST BYTE : "+ bufData[bufData.length-1]);///133
+        /** 포맷에 맞는지 검사 **/
+        if(bufData[0] != 132 || bufData[bufData.length-1] != 133) {//84, 85
+            logger.info("ABNORMAL TELEGRAM : "+bufData.toString('hex').toUpperCase());
+            return;
+        }
+
         //Header 분리
-        if(data.length < 10) return;//abnormal telegram
+        // if(data.length < 10) return;//abnormal telegram
         let header = frame.Common.Header.allocate();
         header._setBuff(bufData.slice(0, 8));
         logger.info("Header="+header.buffer().toString('hex').toUpperCase());
@@ -46,11 +54,6 @@ server.on('connection', socket => {
             logger.info("New "+Object.keys(clients).length+"th connected remote address("+(socket.remoteAddress+":"+socket.remotePort)+") exi_id => "+clientName)
         }
 
-        // TODO 체크 로직
-        /*****************************************************
-        1) proxy.header.startCode != 84 아니면 접속종료 (아니면, 무시)
-        2) proxy.header.functionCode
-        *****************************************************/
         switch(header.fields.messageType){
             case 1:     //Hello (Send Response)
                 switch(header.fields.subMessageType){
