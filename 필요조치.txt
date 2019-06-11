@@ -1,0 +1,1 @@
+grafana_icon.svg 를 D:\DEV\TIG Stack\grafana-6.1.3\public\img 복사
