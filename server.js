@@ -247,25 +247,37 @@ const pEvent = require('p-event');
 setInterval(async ()=>{
     Object.keys(clients).forEach(async (key) => {
         let client = clients[key];
-        logger.info("PERIOD SENDING : EXTENDER_ID : ["+key+"] ["+client.remoteAddress+":"+client.remotePort+"]");
+        //for Hello
+        logger.info("PERIODIC HELLO SENDING : EXTENDER_ID : ["+key+"] ["+client.remoteAddress+":"+client.remotePort+"]");
         if(!client.destroyed) {
-            rpc.rpcEvent.once('PERIOD_CURRENT_GET_STATUS_RESPONSE', (msg) => {
-                logger.debug("EVENT PERIOD_CURRENT_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            rpc.rpcEvent.once('PERIOD_HELLO_RESPONSE', (msg) => {
+                logger.debug("EVENT PERIOD_HELLO_RESPONSE data : "+msg.toString('hex').toUpperCase());
             });
-            client.write(util.genGetCurrentStatusData(key));
-            let data = await pEvent(rpc.rpcEvent, 'PERIOD_CURRENT_GET_STATUS_RESPONSE', {timeout: 10*1000});
-            await worker.current.responseCurrentGetStatusWorker(Buffer.from(data));
+            client.write(util.genHelloRequestData(key));
+            let data = await pEvent(rpc.rpcEvent, 'PERIOD_HELLO_RESPONSE', {timeout: 10*1000});
+            await worker.hello.responseHelloWorker(Buffer.from(data));
         }
         await sleep(1000*5);
-        if(!client.destroyed) {
-            rpc.rpcEvent.once('PERIOD_DIGITAL_GET_STATUS_RESPONSE', (msg) => {
-                logger.debug("EVENT PERIOD_DIGITAL_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
-            });
-            client.write(util.genGetDigitalStatusData(key));
-            let data = await pEvent(rpc.rpcEvent, 'PERIOD_DIGITAL_GET_STATUS_RESPONSE', {timeout: 10*1000});
-            await worker.digital.responseDigitalGetStatusWorker(Buffer.from(data));
-        }
-        await sleep(1000*5);
+
+        // logger.info("PERIOD SENDING : EXTENDER_ID : ["+key+"] ["+client.remoteAddress+":"+client.remotePort+"]");
+        // if(!client.destroyed) {
+        //     rpc.rpcEvent.once('PERIOD_CURRENT_GET_STATUS_RESPONSE', (msg) => {
+        //         logger.debug("EVENT PERIOD_CURRENT_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
+        //     });
+        //     client.write(util.genGetCurrentStatusData(key));
+        //     let data = await pEvent(rpc.rpcEvent, 'PERIOD_CURRENT_GET_STATUS_RESPONSE', {timeout: 10*1000});
+        //     await worker.current.responseCurrentGetStatusWorker(Buffer.from(data));
+        // }
+        // await sleep(1000*5);
+        // if(!client.destroyed) {
+        //     rpc.rpcEvent.once('PERIOD_DIGITAL_GET_STATUS_RESPONSE', (msg) => {
+        //         logger.debug("EVENT PERIOD_DIGITAL_GET_STATUS_RESPONSE data : "+msg.toString('hex').toUpperCase());
+        //     });
+        //     client.write(util.genGetDigitalStatusData(key));
+        //     let data = await pEvent(rpc.rpcEvent, 'PERIOD_DIGITAL_GET_STATUS_RESPONSE', {timeout: 10*1000});
+        //     await worker.digital.responseDigitalGetStatusWorker(Buffer.from(data));
+        // }
+        // await sleep(1000*5);
     });
 }, 2*60*1000);
 

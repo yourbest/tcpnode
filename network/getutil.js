@@ -18,6 +18,16 @@ function getServerIp() {
     return result;
 }
 
+function genHelloRequestData(extenderId) {
+    // 8401 0001 0D03001A 00000000000000000000 85
+    // 8401 0001 0101000A 48454C4F000000000000 85
+    let bufHeader = Buffer.from("8401", 'hex');
+    let bufExtenderId = Buffer.alloc(2);
+    bufExtenderId.writeUInt16BE(extenderId);
+    let bufTail = Buffer.from("0101000A48454C4F00000000000085", 'hex');
+    return Buffer.concat([bufHeader, bufExtenderId, bufTail]);
+}
+
 function genGetCurrentStatusData(extenderId) {
     // 8401 0001 0D03001A 00000000000000000000 85
     let bufHeader = Buffer.from("8401", 'hex');
