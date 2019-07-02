@@ -50,6 +50,7 @@ function genGetDigitalStatusData(extenderId) {
 module.exports = {
     getServerIp,
     genGetCurrentStatusData,
-    genGetDigitalStatusData
+    genGetDigitalStatusData,
+    genHelloRequestData
 }
 

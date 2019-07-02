@@ -32,6 +32,10 @@ let simulator = (connName) => {
         let resp = '8402'+extId;
         console.log('extId:'+extId+', code:'+hexData.substring(8,12));
         switch(hexData.substring(8,12)){
+            case '0101'://Current Get Configuration Response => 8402 0001 0101 001E4C4D4538303031303030303844433143323536410000000000000000000085
+                resp +='0101001E4C4D4538303031303030303844433143323536410000000000000000000085';
+                console.log('Hello Response Data ==>'+resp);
+                break;
             case '0D02'://Current Get Configuration Response => 8402 0100 0D02 0011020000007800B4004F008200960048000085
                 resp +='0D020011020000007800B4004F008200960048000085';
                 break;
