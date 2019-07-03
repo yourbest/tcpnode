@@ -57,7 +57,6 @@ TCPNODE                     ▶▶ Applicaton Root
 ├─logger                    ▶▶ (src) Log File Handling
 │      logger.js
 │      
-│      
 ├─network                   ▶▶ (src) RCP Server Configuration & Services
 │      getutil.js
 │      rpc.js
@@ -108,5 +107,8 @@ Web Server를 포함하는 모니터링 UI를 제공. 운영자는 웹브라우�
 ## Screenshots
 ![Grafana LogIn](./img-grafana-login.png)
 ![Grafana Dashboard 1](./img-grafana-dashboard-digital.png)
-![Grafana Dashboard 2](./img-grafana-control-panel-commands.png)
-![Grafana Dashboard 3](./img-grafana-control-panel-result.png)
+![Grafana Dashboard 2](./img-grafana-dashboard-current.png)
+![Grafana Dashboard 3](./img-grafana-dashboard-total.png)
+![Grafana Dashboard 4](./img-grafana-control-panel-commands.png)
+![Grafana Dashboard 5](./img-grafana-control-panel-result.png)
+![Grafana Dashboard 6](./img-grafana-control-panel-result.png)
