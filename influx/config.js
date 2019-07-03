@@ -7,9 +7,10 @@ const client =new Influx('http://tcpnode:tcpnode@localhost:8086/tcpnode');
 
 client.showDatabases()
     .then(databases => {
+        logger.info("Database Connection is OK ! ---------------------");
         if (!databases.includes('tcpnode')) {
             logger.info("Database 'tcpnode' is absent. so, trying to create it.")
-            return client.createDatabase();
+            client.createDatabase();
         }
     })
     // .then(

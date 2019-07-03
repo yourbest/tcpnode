@@ -211,7 +211,7 @@ server.on('listening', () => {
  \\ \\_____\\ \\ \\_____\\ \\ \\_\\\\"\\_\\   \\ \\_\\  \\ \\_\\ \\_\\ \\ \\_____\\ \\ \\_____\\ \\ \\_____\\ \\ \\_____\\ \\ \\_\\ \\_\\
   \\/_____/  \\/_____/  \\/_/ \\/_/    \\/_/   \\/_/ /_/  \\/_____/  \\/_____/  \\/_____/  \\/_____/  \\/_/ /_/  
     `);
-    logger.info("Controller running on 0.0.0.0:9999 ---------------------");
+    logger.info("Controller v1.2.1 running on 0.0.0.0:9999 ---------------------");
 });
 
 /*********************************************************************
@@ -250,12 +250,12 @@ setInterval(async ()=>{
         //for Hello
         logger.info("PERIODIC HELLO SENDING : EXTENDER_ID : ["+key+"] ["+client.remoteAddress+":"+client.remotePort+"]");
         if(!client.destroyed) {
-            rpc.rpcEvent.once('PERIOD_HELLO_RESPONSE', (msg) => {
-                logger.debug("EVENT PERIOD_HELLO_RESPONSE data : "+msg.toString('hex').toUpperCase());
-            });
+            // rpc.rpcEvent.once('PERIOD_HELLO_RESPONSE', (msg) => {
+            //     logger.debug("EVENT PERIOD_HELLO_RESPONSE data : "+msg.toString('hex').toUpperCase());
+            // });
             client.write(util.genHelloRequestData(key));
-            let data = await pEvent(rpc.rpcEvent, 'PERIOD_HELLO_RESPONSE', {timeout: 10*1000});
-            await worker.hello.responseHelloWorker(Buffer.from(data));
+            // let data = await pEvent(rpc.rpcEvent, 'PERIOD_HELLO_RESPONSE', {timeout: 10*1000});
+            // await worker.hello.responseHelloWorker(Buffer.from(data));
         }
         await sleep(1000*5);
 

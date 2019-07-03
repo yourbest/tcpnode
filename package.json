@@ -1,6 +1,6 @@
 {
   "name": "tcpnode",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "description": "This is TCP Server and Client for Buffer Frame and InfluxDB IO with Node.js",
   "main": "server.js",
   "bin": {

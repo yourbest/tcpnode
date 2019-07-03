@@ -4,6 +4,7 @@ const Net = require('net');
 const zeroFill = require('zero-fill')
 
 // This function create and return a net.Socket object to represent TCP client.
+console.log('Client v1.2.1 Starting -----------------------------');
 let simulator = (connName) => {
 
     const option = {
@@ -32,9 +33,8 @@ let simulator = (connName) => {
         let resp = '8402'+extId;
         console.log('extId:'+extId+', code:'+hexData.substring(8,12));
         switch(hexData.substring(8,12)){
-            case '0101'://Current Get Configuration Response => 8402 0001 0101 001E4C4D4538303031303030303844433143323536410000000000000000000085
+            case '0101'://Hello Response => 8402 0001 0101 001E4C4D4538303031303030303844433143323536410000000000000000000085
                 resp +='0101001E4C4D4538303031303030303844433143323536410000000000000000000085';
-                console.log('Hello Response Data ==>'+resp);
                 break;
             case '0D02'://Current Get Configuration Response => 8402 0100 0D02 0011020000007800B4004F008200960048000085
                 resp +='0D020011020000007800B4004F008200960048000085';
@@ -45,11 +45,19 @@ let simulator = (connName) => {
             case '0E03'://Digital Get Status Response => 840201000E03000301010185
                 resp +='0E03000301010185';
                 break;
+            case '6401'://Notify (DI) Response
+                // 무시
+                break;
+            case '6402'://Notify (Current) Response
+                // 무시
+                break;
             default:
                 break;
         }
-        console.log('Response Data ==>'+resp);
-        socket.write(Buffer.from(resp,'hex'));
+        if(resp.endsWith('85')) {
+            console.log('Response Data ==>'+resp);
+            socket.write(Buffer.from(resp,'hex'));
+        }
 
     });
 
@@ -103,7 +111,7 @@ setInterval(async ()=>{
         await sleep(2000);
         clients[i].write(genCurrentData(zeroFill(4,i+100)));
     }
-}, 60*1000);
+}, 5*1000);
 
 /** just once **/
 // for(let i = 0; i<clients.length; i++){
