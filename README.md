@@ -82,7 +82,7 @@ TCPNODE                     ▶▶ Applicaton Root
 Web Server를 포함하는 모니터링 UI를 제공. 운영자는 웹브라우저로 접속하여 모니터링 및 제어를 수행한다.
 * Grafana (https://grafana.com/)
 * OpenSource License : Apache 2.0 
-![Grafana Monitoring](./img-grafana-overview.png)
+![Grafana Monitoring](./img-grafana-dashboard-total.png)
 ##### 주요 기능
 * 다양하고 미려한 Monitoring Panel (Graph 등) 제공
 * 시스템 및 데이터 형태에 어울리는 자유로운 UI 구성 관리기능 제공
@@ -108,7 +108,6 @@ Web Server를 포함하는 모니터링 UI를 제공. 운영자는 웹브라우�
 ![Grafana LogIn](./img-grafana-login.png)
 ![Grafana Dashboard 1](./img-grafana-dashboard-digital.png)
 ![Grafana Dashboard 2](./img-grafana-dashboard-current.png)
-![Grafana Dashboard 3](./img-grafana-dashboard-total.png)
+![Grafana Dashboard 3](./img-grafana-overview.png)
 ![Grafana Dashboard 4](./img-grafana-control-panel-commands.png)
 ![Grafana Dashboard 5](./img-grafana-control-panel-result.png)
-![Grafana Dashboard 6](./img-grafana-control-panel-result.png)
