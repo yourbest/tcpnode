@@ -111,3 +111,5 @@ Web Server를 포함하는 모니터링 UI를 제공. 운영자는 웹브라우�
 ![Grafana Dashboard 3](./img-grafana-overview.png)
 ![Grafana Dashboard 4](./img-grafana-control-panel-commands.png)
 ![Grafana Dashboard 5](./img-grafana-control-panel-result.png)
+![Grafana Dashboard 6](./img-grafana-control-panel-1.png)
+![Grafana Dashboard 7](./img-grafana-control-panel-2.png)
